@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unnayan/HomePage/view/homepage_view.dart';
-import 'package:unnayan/LoginPage/view/loginpage_view.dart';
+
+import 'HomePage/homepage_view.dart';
 
 void main() {
   runApp(const MyApp());
