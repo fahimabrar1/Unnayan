@@ -117,25 +117,35 @@ class LoginPageForm extends StatefulWidget {
 class _LoginPageFormState extends State<LoginPageForm> {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
-  final _formKey = GlobalKey<FormState>();
-
+  final _loginFormKey = GlobalKey<FormState>();
+  final _userController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String? _user, _password;
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Form(
-        key: _formKey,
+        key: _loginFormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             TextFormField(
+              controller: _userController,
+              onChanged: (val) {
+                _user = val;
+              },
               decoration: const InputDecoration(
                 hintText: 'User name or Email or Phone',
                 labelText: 'User name or Email or Phone',
               ),
             ),
             TextFormField(
+              controller: _passwordController,
+              onChanged: (val) {
+                _password = val;
+              },
               decoration: const InputDecoration(
                 hintText: 'Password',
               ),
@@ -161,11 +171,13 @@ class _LoginPageFormState extends State<LoginPageForm> {
                   color: MyColor.blackFont,
                 ),
               ),
-              onPressed: null,
+              onPressed: onLogin,
             ),
           ],
         ),
       ),
     );
   }
+
+  void onLogin() {}
 }

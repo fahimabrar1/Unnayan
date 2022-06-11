@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:unnayan/HomePage/HomePanel/ComplainFeedbackPanel/view/complain_feedback_panel.dart';
+import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel.dart';
 import 'package:unnayan/my_color.dart';
 
 import '../../ProfilePanel/view/profilepanel_view.dart';
-import '../ComplaintPanel/view/complainpanel_view.dart';
+import '../ComplainPanel/view/complainpanel_view.dart';
 
 ///
 /// Home Page Statefull Class for Home Screen
@@ -16,21 +18,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 2;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     HomePagePanel(),
-    ComplainPage(),
+    // ComplainPage(),
+    ComplainFeedbackSTL(),
     // Text(
     //   'Index 1: Messaging',
     //   style: optionStyle,
     // ),
     // ChatPanel(),
-    Text(
-      'Index 2: SnapChat',
-      style: optionStyle,
-    ),
+    NotificationPage(),
     ProfileSTL(),
     // Text(
     //   'Index 3: Profile',
@@ -46,35 +46,37 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble),
-            label: 'Message',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'SnapChat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: MyColor.bottomNavItemColor,
-        unselectedItemColor: MyColor.blackFont,
-        onTap: _onItemTapped,
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          showSelectedLabels: false,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble),
+              label: 'Message',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              label: 'SnapChat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: MyColor.bottomNavItemColor,
+          unselectedItemColor: MyColor.blackFont,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
@@ -96,89 +98,64 @@ class _HomePagePanelState extends State<HomePagePanel> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 80),
-        Container(
-          margin: const EdgeInsets.all(20),
-          child: TextField(
-            controller: _searchController,
-            decoration: const InputDecoration(
-              labelText: "Search",
-              hintText: "Search",
-              suffixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(10.0),
+    return Container(
+      color: MyColor.tealBackground,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                const SizedBox(height: 80),
+                Container(
+                  height: 40,
+                  margin: const EdgeInsets.all(20),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: MyColor.ash,
+                      labelText: "Search",
+                      hintText: "Search",
+                      suffixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-        ),
-        Expanded(child: getGridView()),
-      ],
+          getGridView(),
+          SliverPadding(
+            padding: EdgeInsets.only(bottom: 40),
+          ),
+        ],
+      ),
     );
   }
 
   Widget getGridView() {
-    return GridView.count(
-      primary: false,
-      padding: const EdgeInsets.all(20),
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
-      crossAxisCount: 2,
-      children: <Widget>[
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[100],
-          child: const Text("He'd have you all unravel at the"),
+    return SliverPadding(
+      padding: const EdgeInsets.all(10.0),
+      sliver: SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.0,
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 10.0),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            return Container(
+              color: Colors.teal[100],
+              child: const Text("He'd have you all unravel at the"),
+            );
+          },
+          childCount: 10,
         ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[200],
-          child: const Text('Heed not the rabble'),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[300],
-          child: const Text('Sound of screams but the'),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[400],
-          child: const Text('Who scream'),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[500],
-          child: const Text('Revolution is coming...'),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[600],
-          child: const Text('Revolution, they...'),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[300],
-          child: const Text('Sound of screams but the'),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[400],
-          child: const Text('Who scream'),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[500],
-          child: const Text('Revolution is coming...'),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          color: Colors.teal[600],
-          child: const Text('Revolution, they...'),
-        ),
-      ],
+      ),
     );
   }
 }
