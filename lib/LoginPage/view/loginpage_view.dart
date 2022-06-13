@@ -1,19 +1,28 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:unnayan/LoginPage/controller/loginpage_controller.dart';
+import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
 
 ///
 /// Login Page Stateless Class for Login Screen
 ///
 class LoginPageSTL extends StatelessWidget {
-  const LoginPageSTL({Key? key}) : super(key: key);
+  GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+   LoginPageSTL({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const LoginPage();
+    return LoginPage();
   }
 }
+
+
+
+
+
 
 ///
 /// Login Page Statefull Class for Login Screen
@@ -25,9 +34,11 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -100,9 +111,14 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
-    );
+        );
   }
 }
+
+
+
+
+
 
 ///
 /// Login Page Form Statefull Class for Login Screen
@@ -115,12 +131,21 @@ class LoginPageForm extends StatefulWidget {
 }
 
 class _LoginPageFormState extends State<LoginPageForm> {
+  final LoginPageController con = LoginPageController();
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   final _loginFormKey = GlobalKey<FormState>();
   final _userController = TextEditingController();
   final _passwordController = TextEditingController();
   String? _user, _password;
+  bool _userTaped = false;
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _userController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -133,12 +158,14 @@ class _LoginPageFormState extends State<LoginPageForm> {
           children: <Widget>[
             TextFormField(
               controller: _userController,
+
               onChanged: (val) {
                 _user = val;
               },
-              decoration: const InputDecoration(
+              decoration:  InputDecoration(
                 hintText: 'User name or Email or Phone',
                 labelText: 'User name or Email or Phone',
+errorText: _userTaped? errorUserText:null,
               ),
             ),
             TextFormField(
@@ -146,9 +173,11 @@ class _LoginPageFormState extends State<LoginPageForm> {
               onChanged: (val) {
                 _password = val;
               },
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Password',
+                errorText: _userTaped? errorPasswordText:null,
               ),
+
             ),
             const SizedBox(
               height: 30,
@@ -179,5 +208,41 @@ class _LoginPageFormState extends State<LoginPageForm> {
     );
   }
 
-  void onLogin() {}
+  void onLogin() {
+    print("Clicked Login");
+
+    setState(() {
+      _userTaped = true;
+    });
+
+    if(errorUserText == null && errorPasswordText == null)
+      {
+
+        con.login(this.context,_user, _password);
+      }
+
+  }
+
+  String? get errorUserText
+  {
+    final text = _userController.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    if (text.length < 4) {
+      return 'Too short';
+    }
+    return null;
+  }
+  String? get errorPasswordText
+  {
+    final text = _passwordController.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    return null;
+  }
+
 }
+
+

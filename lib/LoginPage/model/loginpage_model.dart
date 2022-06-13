@@ -3,7 +3,10 @@
 //     final loginpageModel = loginpageModelFromJson(jsonString);
 
 import 'dart:convert';
+import 'dart:ffi';
 
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
 
@@ -12,7 +15,7 @@ LoginpageModel loginpageModelFromMap(String str) =>
 
 String loginpageModelToMap(LoginpageModel data) => json.encode(data.toMap());
 
-class LoginpageModel {
+class LoginpageModel extends ChangeNotifier{
   LoginpageModel({
     this.username,
     this.email,
@@ -27,6 +30,8 @@ class LoginpageModel {
     _openDatabase();
   }
 
+
+
   String? username;
   String? email;
   String? password;
@@ -35,7 +40,7 @@ class LoginpageModel {
   String? universityName;
   String? name;
   String? location;
-  String? image;
+  List<int>? image;
   Database? db;
 
   factory LoginpageModel.fromMap(Map<String, dynamic> json) => LoginpageModel(
@@ -61,13 +66,22 @@ class LoginpageModel {
         "location": location,
         "image": image,
       };
-  void login() {}
+
+
 
   Future _openDatabase() async {
-// Get a location using getDatabasesPath
-    var databasesPath = await getDatabasesPath();
-    String path = databasesPath + DBDetails.DBNAME;
+    // Get a location using getDatabasesPath
+    // var databasesPath = await getDatabasesPath();
+    // String path = databasesPath + DBDetails.DBNAME;
+    String path = DBDetails.DBPATH + DBDetails.DBNAME;
+    print(path);
+
     db = await openDatabase(path, version: 1);
+    if(db!.isOpen)
+      {
+        print("Database is Opended");
+
+      }
   }
 
   Future open(String path) async {}
@@ -77,11 +91,28 @@ class LoginpageModel {
   //   return todo;
   // }
 
-  Future<LoginpageModel?> getTodo(int id) async {
+  Future<LoginpageModel?> getUser(String? myuser, String? mypassword) async {
     // Get the records
-    List<Map<String, Object?>>? list = await db?.rawQuery(
-        'SELECT * FROM ${DBDetails.DBTable_USER} where email = $email | username = $username | phoneNumber = $phoneNumber AND password = $password');
+    List<Map<String, dynamic?>>? list = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_USER} WHERE (username = '$myuser' OR email = '$myuser' OR phoneNumber = '$myuser') AND (password = '$mypassword')");
     print(list);
+    if(list!.length == 1 ) {
+      var v = LoginpageModel.fromMap(list.first);
+
+      if (v != null) {
+        this.name = v.name;
+        this.universityName = v.universityName;
+        this.username = v.username;
+        this.phoneNumber = v.phoneNumber;
+        this.password = v.password;
+        this.email = v.email;
+        this.image = v.image;
+        this.location = v.location;
+        this.userType = v.userType;
+      }
+      notifyListeners();
+      return v;
+    }
+    return null;
   }
 
   // Future<int> delete(int id) async {

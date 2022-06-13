@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:unnayan/Components/cusomt_text_style.dart';
+import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
 
 ///
@@ -36,8 +40,12 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late LoginpageModel user;
+
+
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<LoginpageModel>(context,listen: false);
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,19 +54,27 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(
             height: 100,
           ),
-          const Image(
-            image: AssetImage('assets/images/unnayan_logo.png'),
-          ),
+           Container(
+             margin: EdgeInsets.only(left: 80,right: 80),
+             child: ClipOval(
+                 child: (Provider.of<LoginpageModel>(context, listen: false).image!.isNotEmpty)?Image(
+                  image: MemoryImage(Uint8List.fromList(Provider.of<LoginpageModel>(context, listen: false).image!)) ,
+          fit: BoxFit.cover,):Image(
+                  image: AssetImage('assets/images/unnayan_logo.png') ,
+          fit: BoxFit.cover,),
+
+             ),
+           ),
           const SizedBox(height: 30),
           Text(
-            'Md.Saiful Islam',
+            Provider.of<LoginpageModel>(context, listen: false).name.toString(),
             style: CustomTextStyle.textStyle(MyColor.blackFont, 24),
           ),
           const SizedBox(
             height: 10,
           ),
           Text(
-            'United International University',
+            Provider.of<LoginpageModel>(context, listen: false).universityName.toString(),
             style: CustomTextStyle.textStyle(MyColor.blackFont, 18),
           ),
           const SizedBox(
