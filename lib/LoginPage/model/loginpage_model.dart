@@ -1,12 +1,11 @@
-// To parse this JSON data, do
-//
-//     final loginpageModel = loginpageModelFromJson(jsonString);
 
 import 'dart:convert';
-import 'dart:ffi';
-
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:path/path.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
 
@@ -76,11 +75,36 @@ class LoginpageModel extends ChangeNotifier{
     String path = DBDetails.DBPATH + DBDetails.DBNAME;
     print(path);
 
-    db = await openDatabase(path, version: 1);
+
+    // Check if the database exists
+    var exists = await databaseExists(path);
+
+    if (!exists) {
+      // Should happen only the first time you launch your application
+      print("Creating new copy from asset");
+
+      // Make sure the parent directory exists
+      try {
+        await Directory(dirname(path)).create(recursive: true);
+      } catch (_) {}
+
+      // Copy from asset
+      ByteData data = await rootBundle.load(join("assets", "unnayan.db"));
+      List<int> bytes =
+      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+      // Write and flush the bytes written
+      await File(path).writeAsBytes(bytes, flush: true);
+
+    } else {
+      print("Opening existing database");
+    }
+    db = await openDatabase(path);
+
+    // db = await openDatabase(path, version: 1);
     if(db!.isOpen)
       {
         print("Database is Opended");
-
       }
   }
 
@@ -93,25 +117,37 @@ class LoginpageModel extends ChangeNotifier{
 
   Future<LoginpageModel?> getUser(String? myuser, String? mypassword) async {
     // Get the records
-    List<Map<String, dynamic?>>? list = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_USER} WHERE (username = '$myuser' OR email = '$myuser' OR phoneNumber = '$myuser') AND (password = '$mypassword')");
-    print(list);
-    if(list!.length == 1 ) {
-      var v = LoginpageModel.fromMap(list.first);
-
-      if (v != null) {
-        this.name = v.name;
-        this.universityName = v.universityName;
-        this.username = v.username;
-        this.phoneNumber = v.phoneNumber;
-        this.password = v.password;
-        this.email = v.email;
-        this.image = v.image;
-        this.location = v.location;
-        this.userType = v.userType;
+    if(db!.isOpen)
+      {
+        print("DB STILL OPEN");
       }
-      notifyListeners();
-      return v;
-    }
+    List<Map<String, dynamic?>>? list = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_USER} WHERE (username = '$myuser' OR email = '$myuser' OR phoneNumber = '$myuser') AND (password = '$mypassword')");
+    // List<Map<String, dynamic?>>? list = await db?.rawQuery("SELECT * FROM user");
+    if(list!.isNotEmpty)
+      {
+        print(list.length);
+
+        if(list.length == 1 ) {
+          print(list);
+
+          var v = LoginpageModel.fromMap(list.first);
+
+          if (v != null) {
+            this.name = v.name;
+            this.universityName = v.universityName;
+            this.username = v.username;
+            this.phoneNumber = v.phoneNumber;
+            this.password = v.password;
+            this.email = v.email;
+            this.image = v.image;
+            this.location = v.location;
+            this.userType = v.userType;
+          }
+          notifyListeners();
+          return v;
+        }
+      }
+
     return null;
   }
 
