@@ -1,8 +1,8 @@
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unnayan/LoginPage/controller/loginpage_controller.dart';
 import 'package:unnayan/my_color.dart';
-
 ///
 /// Login Page Stateless Class for Login Screen
 ///
@@ -32,7 +32,10 @@ class LoginPage extends StatefulWidget {
 }
 
 
+
 class _LoginPageState extends State<LoginPage> {
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -206,7 +209,7 @@ errorText: _userTaped? errorUserText:null,
   }
 
   void onLogin() {
-    print("Clicked Login");
+
 
     setState(() {
       _userTaped = true;

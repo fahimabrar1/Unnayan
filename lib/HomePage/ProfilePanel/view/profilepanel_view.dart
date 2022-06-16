@@ -1,18 +1,20 @@
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/Components/cusomt_text_style.dart';
+import 'package:unnayan/HomePage/ProfilePanel/controller/profilepanel_contorller.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 ///
 /// Profile Page Stateless Class for Profile Screen
 ///
 
 class ProfileSTL extends StatelessWidget {
   const ProfileSTL({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,11 +43,13 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late LoginpageModel user;
-
+  late String username,university;
+  ProfileController con = ProfileController();
 
   @override
   Widget build(BuildContext context) {
     user = Provider.of<LoginpageModel>(context,listen: false);
+
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -54,29 +58,49 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(
             height: 100,
           ),
-           Container(
-             margin: EdgeInsets.only(left: 80,right: 80),
-             child: ClipOval(
-                 child: (Provider.of<LoginpageModel>(context, listen: false).image!.isNotEmpty)?Image(
-                  image: MemoryImage(Uint8List.fromList(Provider.of<LoginpageModel>(context, listen: false).image!)) ,
-          fit: BoxFit.cover,):Image(
-                  image: AssetImage('assets/images/unnayan_logo.png') ,
-          fit: BoxFit.cover,),
+           // FutureBuilder<Widget>(
+           //   future: getUserDP(),
+           //     builder:(ctx,snap){
+           //
+           //       if(snap.hasData)
+           //         {
+           //           return ;
+           //         }
+           //       return Container(
+           //         margin: EdgeInsets.only(left: 80,right: 80),
+           //         child: SizedBox(
+           //           height: 50,
+           //           width: 50,
+           //           child: Center(
+           //             child: CircularProgressIndicator(),
+           //           ),
+           //         )
+           //       );
+           //     }
+           // ),
+      Container(
+        margin: EdgeInsets.only(left: 80,right: 80),
+        child: ClipOval(
+          child: (Provider.of<LoginpageModel>(context, listen: false).image!.isNotEmpty)?Image(
+            image: MemoryImage(Uint8List.fromList(Provider.of<LoginpageModel>(context, listen: false).image!)) ,
+            fit: BoxFit.cover,):Image(
+            image: AssetImage('assets/images/unnayan_logo.png') ,
+            fit: BoxFit.cover,),
 
-             ),
-           ),
-          const SizedBox(height: 30),
-          Text(
-            Provider.of<LoginpageModel>(context, listen: false).name.toString(),
-            style: CustomTextStyle.textStyle(MyColor.blackFont, 24),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            Provider.of<LoginpageModel>(context, listen: false).universityName.toString(),
-            style: CustomTextStyle.textStyle(MyColor.blackFont, 18),
-          ),
+        ),
+      ),
+      const SizedBox(height: 30),
+      Text(
+        Provider.of<LoginpageModel>(context, listen: false).name.toString(),
+        style: CustomTextStyle.textStyle(MyColor.blackFont, 24),
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      Text(
+        Provider.of<LoginpageModel>(context, listen: false).universityName.toString(),
+        style: CustomTextStyle.textStyle(MyColor.blackFont, 18),
+      ),
           const SizedBox(
             height: 30,
           ),
@@ -111,7 +135,27 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+
+
+
+  Future<DocumentSnapshot> getUserData() async
+  {      print(FirebaseAuth.instance.currentUser!.uid);
+
+  return FirebaseFirestore.instance.
+    collection('db').
+    doc('unnayan').
+    collection('users').
+    doc(FirebaseAuth.instance.currentUser!.uid).
+    get();
+
+  }
+
+  Future<Widget> getUserDP() async {
+    return Image.network(await con.fetchUserDP().then((value) => value.toString()));
+  }
 }
+
+
 
 class ProfileInfoRow extends StatelessWidget {
   final String title;

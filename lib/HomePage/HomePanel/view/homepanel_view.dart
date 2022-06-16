@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/HomePage/HomePanel/ComplainFeedbackPanel/view/complain_feedback_panel.dart';
+import 'package:unnayan/HomePage/HomePanel/Institue/view/institueGridView.dart';
 import 'package:unnayan/HomePage/HomePanel/controller/homepanel_controller.dart';
 import 'package:unnayan/HomePage/HomePanel/model/homepanel_model.dart';
 import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel.dart';
@@ -10,6 +11,7 @@ import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
 
 import '../../../LoginPage/controller/loginpage_controller.dart';
+import '../../../my_vars.dart';
 import '../../ProfilePanel/view/profilepanel_view.dart';
 import '../ComplainPanel/view/complainpanel_view.dart';
 
@@ -29,8 +31,8 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomePagePanel(),
+  static List<Widget> _widgetOptions = <Widget>[
+    HomePagePanel(HomePageEnum.org,null),
     // ComplainPage(),
     ComplainFeedbackSTL(),
     // Text(
@@ -49,44 +51,47 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      // print(index);
 
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
+    return
+     SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Center(
+            child: _widgetOptions.elementAt(_selectedIndex),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            showSelectedLabels: false,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.chat_bubble),
+                label: 'Message',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.notifications),
+                label: 'SnapChat',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: MyColor.bottomNavItemColor,
+            unselectedItemColor: MyColor.blackFont,
+            onTap: _onItemTapped,
+          ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          showSelectedLabels: false,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble),
-              label: 'Message',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
-              label: 'SnapChat',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: MyColor.bottomNavItemColor,
-          unselectedItemColor: MyColor.blackFont,
-          onTap: _onItemTapped,
-        ),
-      ),
+
     );
   }
 }
@@ -96,7 +101,10 @@ class _HomePageState extends State<HomePage> {
 ///
 
 class HomePagePanel extends StatefulWidget {
-  const HomePagePanel({Key? key}) : super(key: key);
+  HomePageEnum enu;
+  int? ID;
+
+  HomePagePanel(this.enu, this.ID ,{Key? key}) : super(key: key);
 
   @override
   State<HomePagePanel> createState() => _HomePagePanelState();
@@ -106,6 +114,22 @@ class _HomePagePanelState extends State<HomePagePanel> {
   final _searchController = TextEditingController();
   final HomePageController homepagecontroller = HomePageController();
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    print(widget.enu);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _searchController.dispose();
+    homepagecontroller.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -146,12 +170,12 @@ class _HomePagePanelState extends State<HomePagePanel> {
       ),
     );
   }
-
+  bool InstituesVisible = false;
   Widget getGridView() {
     return SliverPadding(
       padding: const EdgeInsets.all(10.0),
       sliver: FutureBuilder(
-          future: homePageGetData(),
+          future: homePageGetData(widget.enu,widget.ID),
           builder: (context,snapshot){
             if(!snapshot.hasData) {
               //   return SliverPadding(padding: EdgeInsets.all(1));
@@ -206,7 +230,21 @@ class _HomePagePanelState extends State<HomePagePanel> {
                                   fit: BoxFit.cover,),
 
                                   ),
-                                  onTap: (){},
+                                  onTap: (){
+                                        setState(() {
+                                          if(widget.enu == HomePageEnum.org)
+                                            {
+                                              InstituesVisible = true;
+                                              widget.enu = HomePageEnum.ins;
+                                              widget.ID = int.parse(homepagecontroller.grid![index].organizationTypeId!);
+                                            }else if(widget.enu == HomePageEnum.ins){
+
+                                          }
+
+
+                                        });
+
+                                  },
                                   );
                                 },
                                 childCount: homepagecontroller.grid!.length,
@@ -221,38 +259,27 @@ class _HomePagePanelState extends State<HomePagePanel> {
       ),
     );
   }
-  //
-  // Widget getGridView() {
-  //   return SliverPadding(
-  //     padding: const EdgeInsets.all(10.0),
-  //     sliver: SliverGrid(
-  //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-  //           crossAxisCount: 2,
-  //           childAspectRatio: 1.0,
-  //           mainAxisSpacing: 10.0,
-  //           crossAxisSpacing: 10.0),
-  //       delegate: SliverChildBuilderDelegate(
-  //         (context, index) {
-  //           return InkWell(
-  //             child: Container(
-  //               color: MyColor.white,
-  //               child: Image(
-  //               image: MemoryImage(Uint8List.fromList(homepagecontroller.grid![index].image!)) ,
-  //           fit: BoxFit.cover,),
-  //
-  //           ),
-  //           onTap: (){},
-  //           );
-  //         },
-  //         childCount: (homepagecontroller.grid!.isNotEmpty)?homepagecontroller.grid!.length:10,
-  //       ),
-  //     ),
-  //   );
-  // }
-  Future<List<HomePageGrid>> homePageGetData() async
+
+
+
+  Future<List<MyMainGrid>> homePageGetData(HomePageEnum enu, [int? ID] ) async
   {
-     await homepagecontroller.initDatabase().whenComplete(() =>
-         homepagecontroller.getHomePageGrid());
+
+    print("Called homePageGetData");
+    print("Called HomePageEnum: ");
+    print(enu);
+    print("Called ID: ");
+    print(ID);
+
+    await homepagecontroller.initDatabase().whenComplete(() {
+      if(enu == HomePageEnum.org)
+        {
+          homepagecontroller.getHomePageGrid();
+        }else{
+        homepagecontroller.getInstitueseGrid(ID!);
+
+      }
+     });
      return homepagecontroller.grid!;
   }
 }

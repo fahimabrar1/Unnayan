@@ -4,36 +4,37 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
 
-HomePageGrid HomePageGridFromMap(String str) => HomePageGrid.fromMap(json.decode(str));
+// HomeORGPageGrid HomePageORGGridFromMap(String str) => HomeORGPageGrid.fromMap(json.decode(str));
+//
+// String homePageORGModelToMap(HomeORGPageGrid data) => json.encode(data.toMap());
+//
+// HomeINSPageGrid HomePageINSGridFromMap(String str) => HomeINSPageGrid.fromMap(json.decode(str));
+//
+// String homePageINSModelToMap(HomeINSPageGrid data) => json.encode(data.toMap());
 
-String homePageModelToMap(HomePageGrid data) => json.encode(data.toMap());
 
-
-class HomePageModel {
+class HomeORGPageModel  {
   Database? db;
 
 
   Future<void> open_Database() async {
-    db = await openDatabase(DBDetails.DBPATH+DBDetails.DBNAME, version: 1);
-    if(db!.isOpen)
-    {
-      print("Database is Opended Now");
-
-    }
+    db = await DBDetails.InitDatabase();
   }
 
 
 
-  Future<List<HomePageGrid>?> getGrid() async {
+  Future<List<HomeORGPageGrid>?> getOrganizationGrid() async {
     // Get the records
     List<Map<String, dynamic>>? maps = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_ORGANIZATIONSTYPE}");
-    List<HomePageGrid> grid = [];
+    List<HomeORGPageGrid> grid = [];
     if (maps!.length > 0) {
       maps.forEach((card) {
-        grid.add(HomePageGrid.fromMap(card));
+        grid.add(HomeORGPageGrid.fromMap(card));
       });
       return grid;
     }
@@ -45,28 +46,116 @@ class HomePageModel {
 
 }
 
+class HomeINSPageModel  {
+  Database? db;
 
 
-class HomePageGrid{
-  HomePageGrid({
+  Future<void> open_Database() async {
+    db = await DBDetails.InitDatabase();
+  }
+
+
+
+  Future<List<HomeINSPageGrid>?> getInstitueGrid(int ID) async {
+    // Get the records
+    if(db == null)
+      {
+        db = await DBDetails.InitDatabase();
+
+      }
+
+
+    List<Map<String, dynamic>>? maps = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_ORGANIZATIONS} WHERE ( ${DBDetails.DBTable_Where_ORGANIZATIONSTYPEID} = '${ID}' )");
+    List<HomeINSPageGrid> grid = [];
+    if (maps!.length > 0) {
+      maps.forEach((card) {
+        grid.add(HomeINSPageGrid.fromMap(card));
+      });
+
+      return grid;
+    }
+    return null;
+  }
+
+
+  Future close() async => db!.close();
+
+}
+
+class MyMainGrid
+{
+String? organizationTypeId;
+String? name;
+List<int>? image;
+}
+
+class HomeORGPageGrid extends MyMainGrid{
+  HomeORGPageGrid({
     this.organizationTypeId,
     this.name,
     this.image,
   });
 
+
+  @override
   String? organizationTypeId;
+  @override
   String? name;
+  @override
   List<int>? image;
 
-  factory HomePageGrid.fromMap(Map<String, dynamic> json) => HomePageGrid(
+  factory HomeORGPageGrid.fromMap(Map<String, dynamic> json) => HomeORGPageGrid(
     organizationTypeId: json["organizationTypeId"].toString(),
     name: json["name"],
     image: json["image"],
   );
 
+
   Map<String, dynamic> toMap() => {
     "organizationTypeId": organizationTypeId,
     "name": name,
     "image": image,
+  };
+}
+
+
+
+class HomeINSPageGrid extends MyMainGrid{
+  HomeINSPageGrid({
+    this.organizationId,
+    this.organizationTypeId,
+    this.name,
+    this.image,
+  });
+
+  @override
+  String? organizationTypeId;
+  @override
+  String? name;
+  @override
+  List<int>? image;
+  String? organizationId;
+
+
+  factory HomeINSPageGrid.fromMap(Map<String, dynamic> json){
+
+    // print("organizationId: "+json["organizationsId"].toString());
+    // print("organizationTypeId: "+json["organizationTypeId"].toString());
+    // print(json["image"]);
+    // print("name: "+json["name"]);
+    return HomeINSPageGrid(
+      organizationId: json["organizationsId"].toString(),
+      organizationTypeId: json["organizationTypeId"].toString(),
+      image: json["image"],
+      name: json["name"],
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+    "organizationTypeId": organizationTypeId,
+    "name": name,
+    "image": image,
+    "organizationId":organizationId,
+
   };
 }

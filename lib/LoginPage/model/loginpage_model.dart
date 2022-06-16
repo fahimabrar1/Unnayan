@@ -8,6 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 LoginpageModel loginpageModelFromMap(String str) =>
     LoginpageModel.fromMap(json.decode(str));
@@ -115,6 +117,10 @@ class LoginpageModel extends ChangeNotifier{
   //   return todo;
   // }
 
+
+  // Future<LoginpageModel?> getUserFromFirebase(String user,String password)async{
+  //   await FirebaseAuth.instance.signInWithEmailAndPassword(email: user, password: password);
+  // }
   Future<LoginpageModel?> getUser(String? myuser, String? mypassword) async {
     // Get the records
     if(db!.isOpen)

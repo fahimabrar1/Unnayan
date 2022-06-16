@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
@@ -5,9 +6,22 @@ import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'HomePage/homepage_view.dart';
 import 'LoginPage/view/loginpage_view.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
+
+Future<void> mainIni()async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp().whenComplete(() {
+
+    print("completed");
+    runApp(const MyApp());
+
+  });
+
+}
 void main() {
-  runApp(const MyApp());
+  mainIni();
 }
 
 class MyApp extends StatelessWidget {
@@ -32,8 +46,8 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        // home: const HomePageSTL(),
-        home: Scaffold(body: LoginPageSTL()),
+        home: const HomePageSTL(),
+        // home: Scaffold(body: LoginPageSTL()),
       ),
     );
   }
