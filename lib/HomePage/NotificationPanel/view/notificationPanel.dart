@@ -1,5 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:unnayan/Components/cusomt_text_style.dart';
+import 'package:unnayan/HomePage/NotificationPanel/controller/notificationpanel_controller.dart';
+import 'package:unnayan/HomePage/NotificationPanel/model/notificationpanel_model.dart';
+import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -11,37 +17,51 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   final _searchController = TextEditingController();
-  final List<Map<String, dynamic>> _allUsers = [
-    {"id": 1, "name": "Andy", "subtitle": "This is my subtitle"},
-    {"id": 2, "name": "Aragon", "subtitle": "This is my subtitle"},
-    {"id": 3, "name": "Bob", "subtitle": "This is my subtitle"},
-    {"id": 4, "name": "Barbara", "subtitle": "This is my subtitle"},
-    {"id": 5, "name": "Candy", "subtitle": "This is my subtitle"},
-    {"id": 6, "name": "Colin", "subtitle": "This is my subtitle"},
-    {"id": 7, "name": "Audra", "subtitle": "This is my subtitle"},
-    {"id": 8, "name": "Banana", "subtitle": "This is my subtitle"},
-    {"id": 9, "name": "Caversky", "subtitle": "This is my subtitle"},
-    {"id": 10, "name": "Becky", "subtitle": "This is my subtitle"},
-  ];
-  List<Map<String, dynamic>> _foundUsers = [];
+  late List<NotificationPageModel> _allUsers;
+  // late List<Map<String, dynamic>> _allUsers;
+  // [
+  //   {"id": 1, "name": "Andy", "subtitle": "This is my subtitle"},
+  //   {"id": 2, "name": "Aragon", "subtitle": "This is my subtitle"},
+  //   {"id": 3, "name": "Bob", "subtitle": "This is my subtitle"},
+  //   {"id": 4, "name": "Barbara", "subtitle": "This is my subtitle"},
+  //   {"id": 5, "name": "Candy", "subtitle": "This is my subtitle"},
+  //   {"id": 6, "name": "Colin", "subtitle": "This is my subtitle"},
+  //   {"id": 7, "name": "Audra", "subtitle": "This is my subtitle"},
+  //   {"id": 8, "name": "Banana", "subtitle": "This is my subtitle"},
+  //   {"id": 9, "name": "Caversky", "subtitle": "This is my subtitle"},
+  //   {"id": 10, "name": "Becky", "subtitle": "This is my subtitle"},
+  // ];
+  late List<NotificationPageModel> _foundUsers;
+
+  var conTroller = NotificationPageContoller();
+
+
   @override
   void initState() {
-    _foundUsers = _allUsers;
+    // conTroller.showList(Provider.of<LoginpageModel>(context).iduser!).then((value){
+    //   _allUsers = value!;
+    //   _foundUsers = _allUsers;
+    // });
+
+
+    // _allUsers = conTroller.showList(1);
+
 
     super.initState();
   }
 
   // This function is called whenever the text field changes
   void _runFilter(String enteredKeyword) {
-    List<Map<String, dynamic>> results = [];
+    List<NotificationPageModel> results = [];
     if (enteredKeyword.isEmpty) {
       // if the search field is empty or only contains white-space, we'll display all users
       results = _allUsers;
     } else {
       results = _allUsers
-          .where((user) =>
-              user["name"].toLowerCase().contains(enteredKeyword.toLowerCase()))
-          .toList();
+          .where((user)=>
+            user.name!.toLowerCase().contains(enteredKeyword.toLowerCase())
+          )
+          .toList() as List<NotificationPageModel>;
       // we use the toLowerCase() method to make it case-insensitive
     }
 
@@ -103,36 +123,57 @@ class _NotificationPageState extends State<NotificationPage> {
             height: 20,
           ),
         ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              return NotificationTile(index, _foundUsers);
-            },
-            childCount: _foundUsers.length,
-          ),
+        FutureBuilder(
+          future: getIData(),
+          builder: (context, snap){
+            if(snap.hasData)
+              {
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                      return NotificationTile(index, _foundUsers);
+                    },
+                    childCount: (_foundUsers.length>0)?_foundUsers.length:50,
+                  ),
+                );
+              }else{
+
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    return NotificationTile(index, null);
+                  },
+                  childCount: 50,
+                ),
+              );
+            }
+
+          },
+
         ),
       ]
-          // Column(
-          //   children: [
 
-          //     Expanded(
-          //       child: ListView.builder(
-          //         itemBuilder: ((context, index) {
-          //           return NotificationTile(index, _foundUsers);
-          //         }),
-          //         itemCount: _foundUsers.length,
-          //       ),
-          //     ),
-          //   ],
-          // ),
+
           ),
     );
+  }
+
+
+  Future<List<NotificationPageModel>> getIData() async{
+
+    await conTroller.showList(1).then((value){
+       print("Bal 2");
+       print(value);
+      _allUsers = value!;
+      _foundUsers = _allUsers;
+    });
+     return _foundUsers;
   }
 }
 
 class NotificationTile extends StatefulWidget {
   final int index;
-  List<Map<String, dynamic>> foundUsers;
+  List<NotificationPageModel>? foundUsers;
   NotificationTile(this.index, this.foundUsers, {Key? key}) : super(key: key);
 
   @override
@@ -149,13 +190,17 @@ class _NotificationTileState extends State<NotificationTile> {
             Expanded(
               child: Card(
                 color: MyColor.whiteLowOpacity,
-                child: ListTile(
-                  leading: const FlutterLogo(
-                    size: 30,
-                  ),
-                  title: Text(widget.foundUsers[widget.index]["name"]),
-                  subtitle: Text(widget.foundUsers[widget.index]["subtitle"]),
+                child: (widget.foundUsers!=null)?ListTile(
+                  leading:Image(image: MemoryImage(Uint8List.fromList(widget.foundUsers![widget.index].image!),),),
+                  // const FlutterLogo(
+                  //   size: 30,
+                  // ),
+                  title: Text(widget.foundUsers![widget.index].name.toString()),
+                  subtitle: Text("Gave a feedback, Please Check"),
                   onTap: () {},
+                ):Padding(
+                  padding: const EdgeInsets.only(top: 30.0,bottom: 30,left: 50,right: 50),
+                  child: Center(child: const LinearProgressIndicator()),
                 ),
                 elevation: 2,
               ),

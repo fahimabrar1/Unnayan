@@ -18,6 +18,7 @@ String loginpageModelToMap(LoginpageModel data) => json.encode(data.toMap());
 
 class LoginpageModel extends ChangeNotifier{
   LoginpageModel({
+    this.iduser,
     this.username,
     this.email,
     this.password,
@@ -32,7 +33,7 @@ class LoginpageModel extends ChangeNotifier{
   }
 
 
-
+  int? iduser;
   String? username;
   String? email;
   String? password;
@@ -45,6 +46,7 @@ class LoginpageModel extends ChangeNotifier{
   Database? db;
 
   factory LoginpageModel.fromMap(Map<String, dynamic> json) => LoginpageModel(
+        iduser: json["iduser"],
         username: json["username"],
         email: json["email"],
         password: json["password"],
@@ -57,6 +59,7 @@ class LoginpageModel extends ChangeNotifier{
       );
 
   Map<String, dynamic> toMap() => {
+        "iduser": iduser,
         "username": username,
         "email": email,
         "password": password,

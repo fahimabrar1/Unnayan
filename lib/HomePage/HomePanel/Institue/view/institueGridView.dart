@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:unnayan/AlWids.dart';
 
 import '../../../../my_color.dart';
 import '../../controller/homepanel_controller.dart';
@@ -17,7 +19,14 @@ class InstituteGridPanel extends StatefulWidget {
 class _InstituteGridPanelState extends State<InstituteGridPanel> {
   final _searchController = TextEditingController();
   final HomePageController homepagecontroller = HomePageController();
+  late WidContainer widContainer;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    widContainer = context.read<WidContainer>();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -119,14 +128,13 @@ class _InstituteGridPanelState extends State<InstituteGridPanel> {
 
                       ),
                       onTap: (){
-                        if(!InstituesVisible)
-                        {
+
                           setState(() {
-                            InstituesVisible = true;
-                            homepagecontroller.getInstitueseGrid(int.parse(homepagecontroller.grid![index].organizationTypeId!));
+                            widContainer.setToComplainPage(int.parse(homepagecontroller.grid![index].organizationTypeId!));
+
 
                           });
-                        }
+
 
                       },
                     );

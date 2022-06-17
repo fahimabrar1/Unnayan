@@ -1,6 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:unnayan/AlWids.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 
 import 'HomePage/homepage_view.dart';
@@ -46,7 +47,9 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: const HomePageSTL(),
+        home: ChangeNotifierProvider<WidContainer>(
+            create: (_)=>WidContainer(),
+            child: const HomePageSTL()),
         // home: Scaffold(body: LoginPageSTL()),
       ),
     );

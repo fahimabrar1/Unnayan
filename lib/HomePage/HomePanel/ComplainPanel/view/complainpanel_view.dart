@@ -1,13 +1,21 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:unnayan/Components/cusomt_text_style.dart';
+import 'package:unnayan/Components/utility_file.dart';
+import 'package:unnayan/HomePage/HomePanel/ComplainPanel/controller/complainpanel_controller.dart';
+import 'package:unnayan/HomePage/HomePanel/ComplainPanel/model/complainpanel_model.dart';
 import 'package:unnayan/my_color.dart';
 import 'package:unnayan/my_vars.dart';
 import 'package:file_picker/file_picker.dart';
 
+import '../../../../LoginPage/model/loginpage_model.dart';
+
 class ComplainPage extends StatefulWidget {
-  const ComplainPage({Key? key}) : super(key: key);
+  int? organizationID;
+  ComplainPage(this.organizationID,{Key? key}) : super(key: key);
 
   @override
   State<ComplainPage> createState() => _ComplainPageState();
@@ -16,6 +24,13 @@ class ComplainPage extends StatefulWidget {
 class _ComplainPageState extends State<ComplainPage> {
   String? filename = "";
   bool fileAttached = false;
+  final nameContorller = TextEditingController();
+  final emailContorller = TextEditingController();
+  final phoneContorller = TextEditingController();
+  final detailContorller = TextEditingController();
+  Uint8List? fileBytes;
+  String? name,email,phone,detail;
+  final conTroller = ComplainPanelContorller();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -110,6 +125,11 @@ class _ComplainPageState extends State<ComplainPage> {
             right: 80,
           ),
           child: TextField(
+            controller: nameContorller,
+            onChanged: (val)
+            {
+              name = val;
+            },
             decoration: new InputDecoration(
               hintText: 'Name',
             ),
@@ -123,6 +143,11 @@ class _ComplainPageState extends State<ComplainPage> {
             right: 80,
           ),
           child: TextField(
+            controller: emailContorller,
+            onChanged: (val)
+            {
+              email = val;
+            },
             decoration: new InputDecoration(
               hintText: 'Email Address',
             ),
@@ -136,6 +161,11 @@ class _ComplainPageState extends State<ComplainPage> {
             right: 80,
           ),
           child: TextField(
+            controller: phoneContorller,
+            onChanged: (val)
+            {
+              phone = val;
+            },
             decoration: new InputDecoration(
               hintText: 'Phone',
             ),
@@ -167,6 +197,11 @@ class _ComplainPageState extends State<ComplainPage> {
               right: 20,
             ),
             child: TextField(
+              controller: detailContorller,
+              onChanged: (val)
+              {
+                detail = val;
+              },
               decoration: const InputDecoration(
                 border: InputBorder.none,
               ),
@@ -204,7 +239,7 @@ class _ComplainPageState extends State<ComplainPage> {
               )
             : Container(),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: onSubmit,
           child: const Text(
             'Submit',
             style: TextStyle(color: MyColor.blackFont),
@@ -220,14 +255,19 @@ class _ComplainPageState extends State<ComplainPage> {
   }
 
   Future uploadAttachment() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image
+    );
 
     if (result != null) {
       PlatformFile file = result.files.first;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("File Attachment"),
       ));
+
       setState(() {
+        fileBytes = result.files.first.bytes;
+        print(file);
         filename = file.name;
         fileAttached = true;
       });
@@ -238,5 +278,28 @@ class _ComplainPageState extends State<ComplainPage> {
       filename = null;
       fileAttached = false;
     }
+  }
+
+
+
+
+
+  void onSubmit(){
+    ComplainPanelModel model = ComplainPanelModel(
+        name: this.name,
+        email: this.email,
+        phone: this.phone,
+        details: this.detail,
+        status: "Pending",
+        showNotiftoOrg: "ture",
+        showNotiftoUser: "false",
+        // iduser: Provider.of<LoginpageModel>(context,listen: false).iduser,
+        iduser: 1,
+        organizationTypeId: widget.organizationID,
+        image: fileBytes
+    );
+    conTroller.submitComplain(model,context);
+
+
   }
 }

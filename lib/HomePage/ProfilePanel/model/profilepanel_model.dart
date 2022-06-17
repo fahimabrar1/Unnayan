@@ -11,6 +11,7 @@ String loginpageModelToMap(ProfileModel data) => json.encode(data.toMap());
 
 class ProfileModel {
   ProfileModel({
+    this.iduser,
     this.username,
     this.email,
     this.password,
@@ -24,6 +25,7 @@ class ProfileModel {
     _openDatabase();
   }
 
+  int? iduser;
   String? username;
   String? email;
   String? password;
@@ -36,6 +38,7 @@ class ProfileModel {
   Database? db;
 
   factory ProfileModel.fromMap(Map<String, dynamic> json) => ProfileModel(
+    iduser: json["iduser"],
     username: json["username"],
     email: json["email"],
     password: json["password"],

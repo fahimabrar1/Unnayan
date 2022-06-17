@@ -3,17 +3,16 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/HomePage/HomePanel/ComplainFeedbackPanel/view/complain_feedback_panel.dart';
+import 'package:unnayan/HomePage/HomePanel/ComplainPanel/view/complainpanel_view.dart';
 import 'package:unnayan/HomePage/HomePanel/Institue/view/institueGridView.dart';
 import 'package:unnayan/HomePage/HomePanel/controller/homepanel_controller.dart';
 import 'package:unnayan/HomePage/HomePanel/model/homepanel_model.dart';
 import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel.dart';
-import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
 
-import '../../../LoginPage/controller/loginpage_controller.dart';
+import '../../../AlWids.dart';
 import '../../../my_vars.dart';
 import '../../ProfilePanel/view/profilepanel_view.dart';
-import '../ComplainPanel/view/complainpanel_view.dart';
 
 ///
 /// Home Page Statefull Class for Home Screen
@@ -28,36 +27,59 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static List<Widget> _widgetOptions = <Widget>[
-    HomePagePanel(HomePageEnum.org,null),
-    // ComplainPage(),
-    ComplainFeedbackSTL(),
-    // Text(
-    //   'Index 1: Messaging',
-    //   style: optionStyle,
-    // ),
-    // ChatPanel(),
-    NotificationPage(),
-    ProfileSTL(),
-    // Text(
-    //   'Index 3: Profile',
-    //   style: optionStyle,
-    // ),
-  ];
+
+
+  late WidContainer widContainer;
+  Widget home = HomePagePanel(HomePageEnum.org,null);
 
   void _onItemTapped(int index) {
+
+    // rebuildAllChildren(context);
+    // print(index);
     setState(() {
+      if(index==0)
+      {
+        widContainer.resetHome();
+      }
       _selectedIndex = index;
-      // print(index);
 
     });
   }
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    widContainer = context.read<WidContainer>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    List<Widget> _widgetOptions = <Widget>[
+    const HomeSTF()
+    ,
+      // ComplainPage(),
+      const ComplainFeedbackSTL(),
+      // Text(
+      //   'Index 1: Messaging',
+      //   style: optionStyle,
+      // ),
+      // ChatPanel(),
+      const NotificationPage(),
+      const ProfileSTL(),
+      // Text(
+      //   'Index 3: Profile',
+      //   style: optionStyle,
+      // ),
+    ];
+
+
     return
      SafeArea(
         child: Scaffold(
@@ -113,12 +135,12 @@ class HomePagePanel extends StatefulWidget {
 class _HomePagePanelState extends State<HomePagePanel> {
   final _searchController = TextEditingController();
   final HomePageController homepagecontroller = HomePageController();
-
+  late WidContainer widContainer;
 
   @override
   void initState() {
     // TODO: implement initState
-
+    widContainer = context.read<WidContainer>();
     print(widget.enu);
     super.initState();
   }
@@ -235,9 +257,11 @@ class _HomePagePanelState extends State<HomePagePanel> {
                                           if(widget.enu == HomePageEnum.org)
                                             {
                                               InstituesVisible = true;
-                                              widget.enu = HomePageEnum.ins;
-                                              widget.ID = int.parse(homepagecontroller.grid![index].organizationTypeId!);
+                                              // widget.enu = HomePageEnum.ins;
+                                              // widget.ID = int.parse(homepagecontroller.grid![index].organizationTypeId!);
+                                              widContainer.setToInst(int.parse(homepagecontroller.grid![index].organizationTypeId!));
                                             }else if(widget.enu == HomePageEnum.ins){
+                                              widContainer.setToComplainPage(int.parse(homepagecontroller.grid![index].organizationTypeId!));
 
                                           }
 
@@ -281,5 +305,31 @@ class _HomePagePanelState extends State<HomePagePanel> {
       }
      });
      return homepagecontroller.grid!;
+  }
+}
+
+
+
+
+class HomeSTF extends StatefulWidget {
+  const HomeSTF({Key? key}) : super(key: key);
+
+  @override
+  State<HomeSTF> createState() => _HomeSTFState();
+}
+
+class _HomeSTFState extends State<HomeSTF> {
+  @override
+  void initState() {
+    print("Container");
+    print(context.read<WidContainer>().panel);
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    print("Provider WidContainer:");
+    print(context.watch<WidContainer>().panel);
+    return (Provider.of<WidContainer>(context).panel);
   }
 }
