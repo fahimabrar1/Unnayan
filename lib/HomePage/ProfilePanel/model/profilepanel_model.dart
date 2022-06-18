@@ -82,6 +82,10 @@ class ProfileModel {
 
   Future<ProfileModel?> getUser(String? myuser, String? mypassword) async {
     // Get the records
+    if(db==null)
+      {
+        db = await DBDetails.InitDatabase();
+      }
     List<Map<String, dynamic?>>? list = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_USER} WHERE (username = '$myuser' OR email = '$myuser' OR phoneNumber = '$myuser') AND (password = '$mypassword')");
     print(list);
     if(list!.length == 1 )
@@ -93,4 +97,51 @@ class ProfileModel {
 
 
   Future close() async => db?.close();
+
+  Future<int> getTotalData(int ID)async {
+    if(db==null)
+    {
+      db = await DBDetails.InitDatabase();
+    }
+    print("getTotalData for user :");
+    List<Map<String, dynamic?>>? map = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${ID})");
+    print(map!.length);
+    if(map!=null)
+      {
+        return map.length;
+      }
+    return 0;
+  }
+
+  Future<int> getHistoryData(int ID)async
+  {
+    if(db==null)
+    {
+      db = await DBDetails.InitDatabase();
+    }
+    print("getTotalData for user :");
+    List<Map<String, dynamic?>>? map = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${ID} AND status = 'solved')");
+    print(map!.length);
+    if(map!=null)
+    {
+      return map.length;
+    }
+    return 0;
+  }
+
+  Future<int> getPendingData(int ID) async
+  {
+    if(db==null)
+    {
+      db = await DBDetails.InitDatabase();
+    }
+    print("getTotalData for user :");
+    List<Map<String, dynamic?>>? map = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${ID}) AND status = 'pending'");
+    print(map!.length);
+    if(map!=null)
+    {
+      return map.length;
+    }
+    return 0;
+  }
 }

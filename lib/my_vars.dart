@@ -4,3 +4,10 @@ enum HomePageEnum{
   ins,
   complain
 }
+
+enum NotificationEnum{
+  def,
+  pending,
+  total,
+  recent
+}

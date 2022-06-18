@@ -2,15 +2,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/change_notifier.dart';
+import 'package:unnayan/HomePage/HomePanel/ComplainFeedbackPanel/view/complain_feedback_panel.dart';
 import 'package:unnayan/HomePage/HomePanel/ComplainPanel/view/complainpanel_view.dart';
 import 'package:unnayan/HomePage/HomePanel/Institue/view/institueGridView.dart';
+import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel_view.dart';
+import 'package:unnayan/HomePage/ProfilePanel/view/profilepanel_view.dart';
 import 'package:unnayan/my_vars.dart';
 
 import 'HomePage/HomePanel/view/homepanel_view.dart';
 
 
 class WidContainer extends ChangeNotifier{
-  Widget panel = HomePagePanel(HomePageEnum.org,null);
+  Widget homePanel = HomePagePanel(HomePageEnum.org,null);
+  Widget profilePanel = ProfileSTL();
   HomePageEnum homeEnum = HomePageEnum.org;
   int? INSID;
 
@@ -19,12 +23,14 @@ class WidContainer extends ChangeNotifier{
   {
     resetHome();
     notifyListeners();
-    return panel;
+    return homePanel;
   }
 
   void resetHome()
   {
-    panel = HomePagePanel(HomePageEnum.org,null);
+    homePanel = HomePagePanel(HomePageEnum.org,null);
+    profilePanel = const ProfileSTL();
+
     notifyListeners();
 
   }
@@ -32,14 +38,31 @@ class WidContainer extends ChangeNotifier{
   void setToInst(int ID)
   {
     INSID = ID;
-    panel = InstituteGridPanel(ID);
+    homePanel = InstituteGridPanel(ID);
     notifyListeners();
   }
 
   void setToComplainPage(int ID)
   {
-    panel = ComplainPage(ID);
+    homePanel = ComplainPage(ID);
+    notifyListeners();
+  }
+
+
+  void setToProgileTONotificationPanel(String notificationTitle , NotificationEnum nEnum)
+  {
+    profilePanel =  NotificationPage(heading: notificationTitle,nEnum: nEnum,);
     notifyListeners();
 
   }
+
+
+  void setToProgileTONFeedbackpanel()
+  {
+    profilePanel =  ComplainFeedbackSTL();
+    notifyListeners();
+
+  }
+
+
 }

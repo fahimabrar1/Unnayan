@@ -29,6 +29,10 @@ class HomeORGPageModel  {
 
 
   Future<List<HomeORGPageGrid>?> getOrganizationGrid() async {
+    if(db==null)
+      {
+        db = await DBDetails.InitDatabase();
+      }
     // Get the records
     List<Map<String, dynamic>>? maps = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_ORGANIZATIONSTYPE}");
     List<HomeORGPageGrid> grid = [];

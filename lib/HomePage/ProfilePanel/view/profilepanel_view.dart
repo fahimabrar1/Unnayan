@@ -4,11 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:unnayan/AlWids.dart';
 import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/HomePage/ProfilePanel/controller/profilepanel_contorller.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:unnayan/my_vars.dart';
 ///
 /// Profile Page Stateless Class for Profile Screen
 ///
@@ -44,11 +46,19 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late LoginpageModel user;
   late String username,university;
+  int totalNum =0,historyNum=0,pendingNum =0 ;
   ProfileController con = ProfileController();
+  @override
+  void initState() {
+    // TODO: implement initState
 
+    user = context.read<LoginpageModel>();
+
+    getComplainData();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<LoginpageModel>(context,listen: false);
 
     return Center(
       child: Column(
@@ -58,31 +68,12 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(
             height: 100,
           ),
-           // FutureBuilder<Widget>(
-           //   future: getUserDP(),
-           //     builder:(ctx,snap){
-           //
-           //       if(snap.hasData)
-           //         {
-           //           return ;
-           //         }
-           //       return Container(
-           //         margin: EdgeInsets.only(left: 80,right: 80),
-           //         child: SizedBox(
-           //           height: 50,
-           //           width: 50,
-           //           child: Center(
-           //             child: CircularProgressIndicator(),
-           //           ),
-           //         )
-           //       );
-           //     }
-           // ),
+
       Container(
         margin: EdgeInsets.only(left: 80,right: 80),
         child: ClipOval(
-          child: (Provider.of<LoginpageModel>(context, listen: false).image!.isNotEmpty)?Image(
-            image: MemoryImage(Uint8List.fromList(Provider.of<LoginpageModel>(context, listen: false).image!)) ,
+          child: (user.image!.isNotEmpty)?Image(
+            image: MemoryImage(Uint8List.fromList(user.image!)) ,
             fit: BoxFit.cover,):Image(
             image: AssetImage('assets/images/unnayan_logo.png') ,
             fit: BoxFit.cover,),
@@ -110,21 +101,21 @@ class _ProfilePageState extends State<ProfilePage> {
             height: 1,
             color: MyColor.blackFont,
           ),
-          ProfileInfoRow('History', 12),
+          ProfileInfoRow('History', historyNum, "History Of Complains",NotificationEnum.recent),
           const Divider(
             indent: 90,
             endIndent: 90,
             height: 1,
             color: MyColor.blackFont,
           ),
-          ProfileInfoRow('Pending Complains', 12),
+          ProfileInfoRow('Pending Complains', pendingNum, "Pending Complains",NotificationEnum.pending),
           const Divider(
             indent: 90,
             endIndent: 90,
             height: 1,
             color: MyColor.blackFont,
           ),
-          ProfileInfoRow('Total Complains', 12),
+          ProfileInfoRow('Total Complains', totalNum ,"Total Complains",NotificationEnum.total),
           const Divider(
             indent: 90,
             endIndent: 90,
@@ -136,36 +127,52 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
-
-  Future<DocumentSnapshot> getUserData() async
-  {      print(FirebaseAuth.instance.currentUser!.uid);
-
-  return FirebaseFirestore.instance.
-    collection('db').
-    doc('unnayan').
-    collection('users').
-    doc(FirebaseAuth.instance.currentUser!.uid).
-    get();
+  Future getComplainData() async {
+    print("User: "+user.iduser!.toString());
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    i =  await con.getTotalData(user.iduser!);
+    j = await con.getPendingData(user.iduser!);
+    k = await con.getHistoryData(user.iduser!);
+    setState(() {
+      totalNum = i;
+      pendingNum = j;
+      historyNum = k;
+    });
 
   }
 
-  Future<Widget> getUserDP() async {
-    return Image.network(await con.fetchUserDP().then((value) => value.toString()));
-  }
+
+
+
+
+
 }
 
 
-
-class ProfileInfoRow extends StatelessWidget {
+class ProfileInfoRow extends StatefulWidget {
   final String title;
   final int number;
-  const ProfileInfoRow(
-    this.title,
-    this.number, {
-    Key? key,
-  }) : super(key: key);
+  final String notificationTitle;
+  final NotificationEnum nEnum;
 
+  const ProfileInfoRow(this.title,
+      this.number, this.notificationTitle,this.nEnum ,{Key? key}) : super(key: key);
+
+  @override
+  State<ProfileInfoRow> createState() => _ProfileInfoRowState();
+}
+
+class _ProfileInfoRowState extends State<ProfileInfoRow> {
+  late WidContainer widContainer;
+  @override
+  void initState() {
+    // TODO: implement initState
+    widContainer = context.read<WidContainer>();
+
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -180,32 +187,44 @@ class ProfileInfoRow extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(left: 80),
               child: Text(
-                title,
+                widget.title,
                 style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
               ),
             ),
           ),
         ),
         Flexible(
-          child: Container(
-            margin: const EdgeInsets.all(10),
-            child: ClipOval(
-              child: Container(
-                padding: const EdgeInsets.only(
-                    left: 15, right: 15, top: 10, bottom: 10),
-                decoration: const BoxDecoration(
-                  // shape: BoxShape.circle,
-                  color: MyColor.blueButton,
-                ),
-                child: Text(
-                  number.toString(),
-                  style: CustomTextStyle.textStyle(MyColor.white, 10),
+          child: InkWell(
+            child: Container(
+              margin: const EdgeInsets.all(10),
+              child: ClipOval(
+                child: Container(
+                  padding: const EdgeInsets.only(
+                      left: 15, right: 15, top: 10, bottom: 10),
+                  decoration: const BoxDecoration(
+                    // shape: BoxShape.circle,
+                    color: MyColor.blueButton,
+                  ),
+                  child: Text(
+                    widget.number.toString(),
+                    style: CustomTextStyle.textStyle(MyColor.white, 10),
+                  ),
                 ),
               ),
             ),
+            onTap: (){
+
+              widContainer.setToProgileTONotificationPanel(widget.notificationTitle,widget.nEnum);
+              setState(() {
+
+              });
+            },
           ),
         ),
       ],
     );
   }
+
+
 }
+

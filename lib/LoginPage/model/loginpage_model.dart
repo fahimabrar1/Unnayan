@@ -142,6 +142,7 @@ class LoginpageModel extends ChangeNotifier{
           var v = LoginpageModel.fromMap(list.first);
 
           if (v != null) {
+            this.iduser = v.iduser;
             this.name = v.name;
             this.universityName = v.universityName;
             this.username = v.username;

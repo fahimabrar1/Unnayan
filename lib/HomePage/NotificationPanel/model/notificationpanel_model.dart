@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
+import 'package:unnayan/my_vars.dart';
 
 NotificationPageModel notificationPageModelFromMap(String str) => NotificationPageModel.fromMap(json.decode(str));
 
@@ -97,14 +98,29 @@ class NotificationPageModel {
   }
 
 
-  Future<List<NotificationPageModel>?> showNotifications(int userId) async
+  Future<List<NotificationPageModel>?> showNotifications(int userId, NotificationEnum nEnum) async
   {
     if(db==null)
     {
       await open_Database();
     }
+    List<Map<String, dynamic>>? maps;
+    switch(nEnum)
+    {
+      case NotificationEnum.def:
+        maps = await db?.rawQuery("SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId})");
+        break;
+      case NotificationEnum.total:
+        maps = await db?.rawQuery("SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId})");
+        break;
 
-    List<Map<String, dynamic>>? maps = await db?.rawQuery("SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId})");
+        case NotificationEnum.recent:
+        maps = await db?.rawQuery("SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId}) AND status = 'solved'");
+        break;
+      case NotificationEnum.pending:
+        maps = await db?.rawQuery("SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId}) AND status = 'pending'");
+        break;
+    }
     List<NotificationPageModel> model =[];
     print(maps!.length);
 

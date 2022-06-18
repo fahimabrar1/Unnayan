@@ -39,79 +39,85 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
 
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/login_bg.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                // color: Colors.red,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    ConstrainedBox(
-                      constraints:
-                          const BoxConstraints(minHeight: 100, maxHeight: 300),
-                    ),
-                    SizedBox(
-                      child: Image.asset('assets/images/unnayan_logo.png'),
-                      height: 150,
-                      width: 150,
-                    ),
-                    const LoginPageForm(),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const SelectableText(
-                      "Forgot Password?",
-                      onTap: null,
-                    ),
-                    const Divider(
-                      height: 20,
-                      endIndent: 100,
-                      indent: 100,
-                      color: MyColor.blackFont,
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.resolveWith<Color?>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.disabled)) {
-                              return MyColor.greenButton;
-                            }
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
 
-                            return null; // Defer to the widget's default.
-                          },
-                        ),
-                      ),
-                      child: const Text(
-                        'Create Account',
-                        style: TextStyle(
-                          color: MyColor.blackFont,
-                        ),
-                      ),
-                      onPressed: null,
-                    ),
-                  ],
-                ),
-              ),
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/login_bg.png'),
+              fit: BoxFit.cover,
             ),
           ),
-        ],
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    // color: Colors.red,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        ConstrainedBox(
+                          constraints:
+                              const BoxConstraints(minHeight: 100, maxHeight: 300),
+                        ),
+                        SizedBox(
+                          child: Image.asset('assets/images/unnayan_logo.png'),
+                          height: 150,
+                          width: 150,
+                        ),
+                        const LoginPageForm(),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        const SelectableText(
+                          "Forgot Password?",
+                          onTap: null,
+                        ),
+                        const Divider(
+                          height: 20,
+                          endIndent: 100,
+                          indent: 100,
+                          color: MyColor.blackFont,
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color?>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.disabled)) {
+                                  return MyColor.greenButton;
+                                }
+
+                                return null; // Defer to the widget's default.
+                              },
+                            ),
+                          ),
+                          child: const Text(
+                            'Create Account',
+                            style: TextStyle(
+                              color: MyColor.blackFont,
+                            ),
+                          ),
+                          onPressed: null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+            ),
       ),
-        );
+    );
   }
 }
 

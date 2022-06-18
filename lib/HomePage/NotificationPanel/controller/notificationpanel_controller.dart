@@ -1,6 +1,7 @@
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:unnayan/HomePage/NotificationPanel/model/notificationpanel_model.dart';
-import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel.dart';
+import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel_view.dart';
+import 'package:unnayan/my_vars.dart';
 
 class NotificationPageContoller extends ControllerMVC
 {
@@ -15,10 +16,10 @@ class NotificationPageContoller extends ControllerMVC
   final NotificationPageModel model;
 
 
-  Future<List<NotificationPageModel>?> showList(int userID) async
+  Future<List<NotificationPageModel>?> showList(int userID, NotificationEnum nEnum) async
   {
     List<NotificationPageModel> V =[];
-    await model.showNotifications(userID).then((value){
+    await model.showNotifications(userID,nEnum).then((value){
       print("BAL");
 
       V = value!;

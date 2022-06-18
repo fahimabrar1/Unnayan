@@ -47,9 +47,12 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: ChangeNotifierProvider<WidContainer>(
-            create: (_)=>WidContainer(),
-            child: const HomePageSTL()),
+        // home: ChangeNotifierProvider<WidContainer>(
+        //     create: (_)=>WidContainer(),
+        //     child: const HomePageSTL()),
+        //
+        home:
+              LoginPageSTL(),
         // home: Scaffold(body: LoginPageSTL()),
       ),
     );

@@ -3,11 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/HomePage/HomePanel/ComplainFeedbackPanel/view/complain_feedback_panel.dart';
-import 'package:unnayan/HomePage/HomePanel/ComplainPanel/view/complainpanel_view.dart';
-import 'package:unnayan/HomePage/HomePanel/Institue/view/institueGridView.dart';
 import 'package:unnayan/HomePage/HomePanel/controller/homepanel_controller.dart';
 import 'package:unnayan/HomePage/HomePanel/model/homepanel_model.dart';
-import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel.dart';
+import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel_view.dart';
 import 'package:unnayan/my_color.dart';
 
 import '../../../AlWids.dart';
@@ -41,10 +39,7 @@ class _HomePageState extends State<HomePage> {
     // rebuildAllChildren(context);
     // print(index);
     setState(() {
-      if(index==0)
-      {
-        widContainer.resetHome();
-      }
+      widContainer.resetHome();
       _selectedIndex = index;
 
     });
@@ -71,8 +66,8 @@ class _HomePageState extends State<HomePage> {
       //   style: optionStyle,
       // ),
       // ChatPanel(),
-      const NotificationPage(),
-      const ProfileSTL(),
+      NotificationPage(heading: "Notifications",nEnum: NotificationEnum.def,),
+      Provider.of<WidContainer>(context).profilePanel,
       // Text(
       //   'Index 3: Profile',
       //   style: optionStyle,
@@ -192,7 +187,6 @@ class _HomePagePanelState extends State<HomePagePanel> {
       ),
     );
   }
-  bool InstituesVisible = false;
   Widget getGridView() {
     return SliverPadding(
       padding: const EdgeInsets.all(10.0),
@@ -256,7 +250,6 @@ class _HomePagePanelState extends State<HomePagePanel> {
                                         setState(() {
                                           if(widget.enu == HomePageEnum.org)
                                             {
-                                              InstituesVisible = true;
                                               // widget.enu = HomePageEnum.ins;
                                               // widget.ID = int.parse(homepagecontroller.grid![index].organizationTypeId!);
                                               widContainer.setToInst(int.parse(homepagecontroller.grid![index].organizationTypeId!));
@@ -295,15 +288,14 @@ class _HomePagePanelState extends State<HomePagePanel> {
     print("Called ID: ");
     print(ID);
 
-    await homepagecontroller.initDatabase().whenComplete(() {
       if(enu == HomePageEnum.org)
         {
-          homepagecontroller.getHomePageGrid();
+        await  homepagecontroller.getHomePageGrid();
+          
         }else{
-        homepagecontroller.getInstitueseGrid(ID!);
+        await homepagecontroller.getInstitueseGrid(ID!);
 
       }
-     });
      return homepagecontroller.grid!;
   }
 }
@@ -322,14 +314,14 @@ class _HomeSTFState extends State<HomeSTF> {
   @override
   void initState() {
     print("Container");
-    print(context.read<WidContainer>().panel);
+    print(context.read<WidContainer>().homePanel);
     // TODO: implement initState
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     print("Provider WidContainer:");
-    print(context.watch<WidContainer>().panel);
-    return (Provider.of<WidContainer>(context).panel);
+    print(context.watch<WidContainer>().homePanel);
+    return (Provider.of<WidContainer>(context).homePanel);
   }
 }

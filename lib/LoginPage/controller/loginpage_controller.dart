@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:unnayan/HomePage/homepage_view.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 
+import '../../AlWids.dart';
+
 class LoginPageController extends ControllerMVC {
   factory LoginPageController() => _this ??= LoginPageController._();
 
@@ -28,7 +30,9 @@ class LoginPageController extends ControllerMVC {
                               MaterialPageRoute(
                                 builder: (context) => ChangeNotifierProvider<LoginpageModel>.value(
                                   value: model,
-                                  child: HomePageSTL(),
+                                  child: ChangeNotifierProvider<WidContainer>(
+                                      create: (_)=>WidContainer(),
+                                      child: const HomePageSTL()),
                                 ),
                               )
                           );

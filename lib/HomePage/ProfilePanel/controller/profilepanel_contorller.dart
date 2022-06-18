@@ -13,19 +13,22 @@ class ProfileController extends ControllerMVC {
   static ProfileController? _this;
   final ProfileModel model;
 
-
-
-  Future<dynamic> fetchUserDP() async
-  {
-    FirebaseStorage store = FirebaseStorage.instance;
-    print(store);
-    print(store.app);
-    print(FirebaseStorage.instance.
-    ref('users').
-    child('fahim'));
-    return await FirebaseStorage.instance.
-    ref().
-        child('users/fahim').
-    getDownloadURL();
+  Future<int> getTotalData(int ID) async{
+    return await model.getTotalData(ID);
   }
+
+  Future<int> getPendingData(int ID) async
+  {
+    return await model.getPendingData(ID);
+  }
+
+  Future<int> getHistoryData(int ID) async
+  {
+    return await model.getHistoryData(ID);
+
+  }
+
+
+
+
 }
