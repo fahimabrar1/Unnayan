@@ -1,5 +1,3 @@
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:unnayan/HomePage/ProfilePanel/model/profilepanel_model.dart';
 
@@ -8,27 +6,20 @@ class ProfileController extends ControllerMVC {
 
   ProfileController._()
       : model = ProfileModel(),
-  super();
+        super();
 
   static ProfileController? _this;
   final ProfileModel model;
 
-  Future<int> getTotalData(int ID) async{
+  Future<int> getTotalData(int ID) async {
     return await model.getTotalData(ID);
   }
 
-  Future<int> getPendingData(int ID) async
-  {
+  Future<int> getPendingData(int ID) async {
     return await model.getPendingData(ID);
   }
 
-  Future<int> getHistoryData(int ID) async
-  {
+  Future<int> getHistoryData(int ID) async {
     return await model.getHistoryData(ID);
-
   }
-
-
-
-
 }

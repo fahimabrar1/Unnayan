@@ -2,15 +2,20 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:unnayan/HomePage/HomePanel/ComplainFeedbackPanel/view/complain_feedback_panel.dart';
+import 'package:unnayan/Components/badge_model.dart';
+import 'package:unnayan/HomePage/ChatPanel/view/charpanel_view.dart';
 import 'package:unnayan/HomePage/HomePanel/controller/homepanel_controller.dart';
 import 'package:unnayan/HomePage/HomePanel/model/homepanel_model.dart';
+import 'package:unnayan/HomePage/NotificationPanel/controller/notificationpanel_controller.dart';
+import 'package:unnayan/HomePage/NotificationPanel/model/notificationpanel_model.dart';
 import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel_view.dart';
+import 'package:unnayan/LoginPage/model/loginpage_model.dart';
+import 'package:unnayan/Services/notification_service.dart';
 import 'package:unnayan/my_color.dart';
+import 'package:badges/badges.dart';
 
 import '../../../AlWids.dart';
 import '../../../my_vars.dart';
-import '../../ProfilePanel/view/profilepanel_view.dart';
 
 ///
 /// Home Page Statefull Class for Home Screen
@@ -33,7 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   late WidContainer widContainer;
   Widget home = HomePagePanel(HomePageEnum.org,null);
-
+  late BadgeCounter badgeCounter;
   void _onItemTapped(int index) {
 
     // rebuildAllChildren(context);
@@ -49,7 +54,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
+    badgeCounter = context.read<BadgeCounter>();
     widContainer = context.read<WidContainer>();
+    getOrgNotifications();
     super.initState();
   }
 
@@ -60,7 +67,7 @@ class _HomePageState extends State<HomePage> {
     const HomeSTF()
     ,
       // ComplainPage(),
-      const ComplainFeedbackSTL(),
+      ChatPage(),
       // Text(
       //   'Index 1: Messaging',
       //   style: optionStyle,
@@ -84,20 +91,23 @@ class _HomePageState extends State<HomePage> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             showSelectedLabels: false,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
+            items:  <BottomNavigationBarItem>[
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Home',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.chat_bubble),
                 label: 'Message',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.notifications),
-                label: 'SnapChat',
+                icon:(badgeCounter.counter>0)?  Badge(
+                    badgeContent: Text(context.watch<BadgeCounter>().counter.toString()),
+                    child: const Icon(Icons.notifications)):
+                Icon(Icons.notifications),
+                label: 'Notification',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 label: 'Profile',
               ),
@@ -110,6 +120,32 @@ class _HomePageState extends State<HomePage> {
         ),
 
     );
+  }
+  NotificationPageContoller contoller = NotificationPageContoller();
+
+  Future<void> getOrgNotifications() async {
+    List<NotificationPageModel> ls = [];
+    await contoller.showList(context.read<LoginpageModel>().iduser!, NotificationEnum.def)
+        .then((value) {
+            ls = value!;
+            ls.forEach((element) {
+              if(element.showNotiftoUser == 'true' && context.read<LoginpageModel>().userType! == 'user')
+                {
+                  setState(() {
+                    badgeCounter.increment();
+                  });
+
+
+                NotificationService().showNotificaiton(
+                      element.organizationsId!,
+                      element.name!,
+                      "Gave a feedback, Please Check"
+                      , 1);
+
+                }
+            });
+        });
+
   }
 }
 

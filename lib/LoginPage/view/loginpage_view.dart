@@ -1,25 +1,21 @@
 import 'dart:ui';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:unnayan/LoginPage/controller/loginpage_controller.dart';
 import 'package:unnayan/my_color.dart';
+
 ///
 /// Login Page Stateless Class for Login Screen
 ///
 class LoginPageSTL extends StatelessWidget {
   GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-   LoginPageSTL({Key? key}) : super(key: key);
+  LoginPageSTL({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return LoginPage();
   }
 }
-
-
-
-
-
 
 ///
 /// Login Page Statefull Class for Login Screen
@@ -31,18 +27,12 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-
-
 class _LoginPageState extends State<LoginPage> {
-
-
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-
         body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -54,77 +44,69 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  child: Container(
-                    // color: Colors.red,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        ConstrainedBox(
-                          constraints:
-                              const BoxConstraints(minHeight: 100, maxHeight: 300),
-                        ),
-                        SizedBox(
-                          child: Image.asset('assets/images/unnayan_logo.png'),
-                          height: 150,
-                          width: 150,
-                        ),
-                        const LoginPageForm(),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        const SelectableText(
-                          "Forgot Password?",
-                          onTap: null,
-                        ),
-                        const Divider(
-                          height: 20,
-                          endIndent: 100,
-                          indent: 100,
-                          color: MyColor.blackFont,
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.disabled)) {
-                                  return MyColor.greenButton;
-                                }
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                            minHeight: 100, maxHeight: 300),
+                      ),
+                      SizedBox(
+                        child: Image.asset('assets/images/unnayan_logo.png'),
+                        height: 150,
+                        width: 150,
+                      ),
+                      const LoginPageForm(),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      const SelectableText(
+                        "Forgot Password?",
+                        onTap: null,
+                      ),
+                      const Divider(
+                        height: 20,
+                        endIndent: 100,
+                        indent: 100,
+                        color: MyColor.blackFont,
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.resolveWith<Color?>(
+                            (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.disabled)) {
+                                return MyColor.greenButton;
+                              }
 
-                                return null; // Defer to the widget's default.
-                              },
-                            ),
+                              return null; // Defer to the widget's default.
+                            },
                           ),
-                          child: const Text(
-                            'Create Account',
-                            style: TextStyle(
-                              color: MyColor.blackFont,
-                            ),
-                          ),
-                          onPressed: null,
                         ),
-                      ],
-                    ),
+                        child: const Text(
+                          'Create Account',
+                          style: TextStyle(
+                            color: MyColor.blackFont,
+                          ),
+                        ),
+                        onPressed: null,
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
-            ),
+        ),
       ),
     );
   }
 }
-
-
-
-
-
 
 ///
 /// Login Page Form Statefull Class for Login Screen
@@ -152,6 +134,7 @@ class _LoginPageFormState extends State<LoginPageForm> {
     _passwordController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -164,14 +147,13 @@ class _LoginPageFormState extends State<LoginPageForm> {
           children: <Widget>[
             TextFormField(
               controller: _userController,
-
               onChanged: (val) {
                 _user = val;
               },
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'User name or Email or Phone',
                 labelText: 'User name or Email or Phone',
-errorText: _userTaped? errorUserText:null,
+                errorText: _userTaped ? errorUserText : null,
               ),
             ),
             TextFormField(
@@ -181,9 +163,8 @@ errorText: _userTaped? errorUserText:null,
               },
               decoration: InputDecoration(
                 hintText: 'Password',
-                errorText: _userTaped? errorPasswordText:null,
+                errorText: _userTaped ? errorPasswordText : null,
               ),
-
             ),
             const SizedBox(
               height: 30,
@@ -215,22 +196,16 @@ errorText: _userTaped? errorUserText:null,
   }
 
   void onLogin() {
-
-
     setState(() {
       _userTaped = true;
     });
 
-    if(errorUserText == null && errorPasswordText == null)
-      {
-
-        con.login(this.context,_user, _password);
-      }
-
+    if (errorUserText == null && errorPasswordText == null) {
+      con.login(this.context, _user, _password);
+    }
   }
 
-  String? get errorUserText
-  {
+  String? get errorUserText {
     final text = _userController.value.text;
     if (text.isEmpty) {
       return 'Can\'t be empty';
@@ -240,15 +215,12 @@ errorText: _userTaped? errorUserText:null,
     }
     return null;
   }
-  String? get errorPasswordText
-  {
+
+  String? get errorPasswordText {
     final text = _passwordController.value.text;
     if (text.isEmpty) {
       return 'Can\'t be empty';
     }
     return null;
   }
-
 }
-
-
