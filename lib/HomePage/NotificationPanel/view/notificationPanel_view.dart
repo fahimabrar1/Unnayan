@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/AlWids.dart';
@@ -7,15 +9,15 @@ import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/HomePage/NotificationPanel/controller/notificationpanel_controller.dart';
 import 'package:unnayan/HomePage/NotificationPanel/model/notificationpanel_model.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
-import 'package:unnayan/Services/notification_service.dart';
 import 'package:unnayan/my_color.dart';
 import 'package:unnayan/my_vars.dart';
 
 class NotificationPage extends StatefulWidget {
   final String? heading;
-  final  NotificationEnum? nEnum;
+  final NotificationEnum? nEnum;
 
-  const NotificationPage({this.heading, this.nEnum, Key? key}) : super(key: key);
+  const NotificationPage({this.heading, this.nEnum, Key? key})
+      : super(key: key);
 
   @override
   State<NotificationPage> createState() => _NotificationPageState();
@@ -25,24 +27,16 @@ class _NotificationPageState extends State<NotificationPage> {
   final _searchController = TextEditingController();
   late List<NotificationPageModel> _allUsers;
   late List<NotificationPageModel> _foundUsers;
+  bool fetchUserData = false;
 
   var conTroller = NotificationPageContoller();
   late BadgeCounter badgeCounter;
   @override
   void initState() {
-    print("Initializing Notification.");
-
-    badgeCounter = context.read<BadgeCounter>();
-    setState(() {
-      badgeCounter.resetCounter();
-    });
-    // NotificationService().showNotificaiton(1,"Org", "Testing",1);
+    log("Initializing Notification.");
     getIData(context.read<LoginpageModel>().iduser!);
     super.initState();
-
   }
-
-  bool fetchUserData = false;
 
   @override
   Widget build(BuildContext context) {
@@ -87,26 +81,31 @@ class _NotificationPageState extends State<NotificationPage> {
                     Radius.circular(10.0),
                   ),
                 ),
-
-
-),
+              ),
             ),
           ),
         ),
-         const SliverToBoxAdapter(
+        const SliverToBoxAdapter(
           child: SizedBox(
             height: 20,
           ),
         ),
         (fetchUserData)
-            ? SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return NotificationTile(index, _foundUsers, widget.nEnum);
-                  },
-                  childCount: _foundUsers.length,
-                ),
-              )
+            ? (_foundUsers == null || _foundUsers.length == 0)
+                ? SliverToBoxAdapter(
+                    child: Center(
+                      child: Text("No Notificaitons Found"),
+                    ),
+                  )
+                : SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return NotificationTile(
+                            index, _foundUsers, widget.nEnum);
+                      },
+                      childCount: _foundUsers.length,
+                    ),
+                  )
             : const SliverToBoxAdapter(
                 child: Center(
                   child: Center(
@@ -123,9 +122,9 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Future<List<NotificationPageModel>> getIData(int ID) async {
-    await conTroller.showList(ID, widget.nEnum!).then((value) {
-      print("Bal 2");
-      print(value);
+    await conTroller.showList(ID, widget.nEnum!, "true").then((value) {
+      log("Bal 2");
+      log(value.toString());
 
       setState(() {
         fetchUserData = true;
@@ -161,8 +160,6 @@ class _NotificationPageState extends State<NotificationPage> {
       print("Founder LEngth: " + _foundUsers.length.toString());
     });
   }
-
-
 }
 
 class NotificationTile extends StatefulWidget {
@@ -205,26 +202,31 @@ class _NotificationTileState extends State<NotificationTile> {
                       child: (widget.foundUsers != null)
                           ? ListTile(
                               leading: SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: ClipOval(
-                                      child: Container(
-                                          padding: const EdgeInsets.all(5),
-                                          color: MyColor.white,
-                                          child: (gotImage)? Image(
+                                height: 50,
+                                width: 50,
+                                child: ClipOval(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(5),
+                                    color: MyColor.white,
+                                    child: (gotImage)
+                                        ? Image(
                                             image: MemoryImage(
                                               Uint8List.fromList(displayImage),
                                             ),
-                                          ):const CircularProgressIndicator(),),),),
+                                          )
+                                        : const CircularProgressIndicator(),
+                                  ),
+                                ),
+                              ),
                               title: Text(widget.foundUsers![widget.index].name
                                   .toString()),
-                              subtitle:const Text("Gave a feedback, Please Check"),
+                              subtitle:
+                                  const Text("Gave a feedback, Please Check"),
                             )
                           : const Padding(
                               padding: EdgeInsets.only(
                                   top: 30.0, bottom: 30, left: 50, right: 50),
-                              child: Center(
-                                  child: LinearProgressIndicator()),
+                              child: Center(child: LinearProgressIndicator()),
                             ),
                       elevation: 2,
                     )
@@ -237,26 +239,30 @@ class _NotificationTileState extends State<NotificationTile> {
                                   width: 50,
                                   child: ClipOval(
                                       child: Container(
-                                          padding: const EdgeInsets.all(5),
-                                          color: MyColor.white,
-                                          child: (gotImage)? Image(
+                                    padding: const EdgeInsets.all(5),
+                                    color: MyColor.white,
+                                    child: (gotImage)
+                                        ? Image(
                                             image: MemoryImage(
                                               Uint8List.fromList(displayImage),
                                             ),
-                                          ):const CircularProgressIndicator(),))),
+                                          )
+                                        : const CircularProgressIndicator(),
+                                  ))),
                               title: Text(widget.foundUsers![widget.index].name
                                   .toString()),
-                              subtitle: Text(widget.foundUsers![widget.index].detailsByUser
+                              subtitle: Text(widget
+                                  .foundUsers![widget.index].detailsByUser
                                   .toString()),
                               onTap: () {
-                                container.setToProgileTONFeedbackpanel(widget.foundUsers![widget.index]);
+                                container.setToProgileTONFeedbackpanel(
+                                    widget.foundUsers![widget.index]);
                               },
                             )
                           : const Padding(
                               padding: EdgeInsets.only(
                                   top: 30.0, bottom: 30, left: 50, right: 50),
-                              child: Center(
-                                  child: LinearProgressIndicator()),
+                              child: Center(child: LinearProgressIndicator()),
                             ),
                       elevation: 2,
                     ),
@@ -272,17 +278,14 @@ class _NotificationTileState extends State<NotificationTile> {
     );
   }
 
-
-  Future getOrgLogo() async
-  {
-    return await controller.getOrgLogo(widget
-        .foundUsers![widget.index]
-        .organizationsId!).then((value){
-          setState(() {
-            displayImage = value!;
-            gotImage = true;
-          });
-
+  Future getOrgLogo() async {
+    return await controller
+        .getOrgLogo(widget.foundUsers![widget.index].organizationsId!)
+        .then((value) {
+      setState(() {
+        displayImage = value!;
+        gotImage = true;
+      });
     });
   }
 }

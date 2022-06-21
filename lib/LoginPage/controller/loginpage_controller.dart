@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:provider/provider.dart';
@@ -18,11 +20,10 @@ class LoginPageController extends ControllerMVC {
 
   Future<void> login(
       BuildContext context, String? _user, String? password) async {
-    print("Clicked Login 2");
-    // LoginpageModel? user = await model.getUserFromFirebase(_user!, password!);
-    LoginpageModel? user = await model.getUser(_user!, password!);
+    log("Clicked Login 2: $_user and $password");
+
+    LoginpageModel? user = await model.getUser(_user!.trim(), password!.trim());
     if (user != null) {
-      print("Ex");
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -32,30 +33,9 @@ class LoginPageController extends ControllerMVC {
                   create: (_) => WidContainer(), child: const HomePageSTL()),
             ),
           ));
-      print("E");
     } else {
       final snackBar = SnackBar(content: const Text('User Not Found'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-  // print(FirebaseAuth.instance.authStateChanges());
-  // FirebaseAuth.instance
-  //     .authStateChanges()
-  //     .listen((User? user) {
-  //   if (user == null) {
-  //     print('User is currently signed out!');
-  //   } else {
-  //     print('User is signed in!');
-  //     print(user.uid);
-  //     Navigator.push(
-  //                 context,
-  //                   MaterialPageRoute(
-  //                     builder: (context) => ChangeNotifierProvider<LoginpageModel>.value(
-  //                       value: model,
-  //                       child: HomePageSTL(),
-  //                     ),
-  //                   )
-  //               );
-  //   }
-  // });
 }

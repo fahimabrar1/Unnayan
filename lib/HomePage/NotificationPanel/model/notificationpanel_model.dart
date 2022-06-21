@@ -5,7 +5,6 @@
 import 'dart:convert';
 
 import 'package:sqflite/sqflite.dart';
-import 'package:unnayan/HomePage/HomePanel/model/homepanel_model.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
 import 'package:unnayan/my_vars.dart';
 
@@ -96,7 +95,7 @@ class NotificationPageModel {
   }
 
   Future<List<NotificationPageModel>?> showNotifications(
-      int userId, NotificationEnum nEnum) async {
+      int userId, NotificationEnum nEnum, String repliedToUser) async {
     if (db == null) {
       await open_Database();
     }
@@ -104,7 +103,7 @@ class NotificationPageModel {
     switch (nEnum) {
       case NotificationEnum.def:
         maps = await db?.rawQuery(
-            "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId})");
+            "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId} AND repliedToUser = '${repliedToUser}')");
         break;
       case NotificationEnum.total:
         maps = await db?.rawQuery(
@@ -170,24 +169,20 @@ class NotificationPageModel {
     return null;
   }
 
-  Future<List<int>?> showORgLogo(int id)
-  async {
-    if(db!=null)
-      {
-        db = await DBDetails.InitDatabase();
-      }
-
+  Future<List<int>?> showORgLogo(int id) async {
+    if (db != null) {
+      db = await DBDetails.InitDatabase();
+    }
 
     ///
     /// ?Wrong Query
     ///
     List<Map<String, dynamic>>? maps = await db?.rawQuery(
         "SELECT image from ${DBDetails.DBTable_ORGANIZATIONS} where organizationsId = ${id}");
-    if(maps!.length==1)
-      {
-        List<int> img = maps.first['image'];
-        return img;
-      }
+    if (maps!.length == 1) {
+      List<int> img = maps.first['image'];
+      return img;
+    }
     return null;
   }
 }

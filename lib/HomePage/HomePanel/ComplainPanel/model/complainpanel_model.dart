@@ -3,14 +3,17 @@
 //     final complainPanelModel = complainPanelModelFromMap(jsonString);
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:sqflite/sqflite.dart';
 
 import '../../../dbdetails.dart';
 
-ComplainPanelModel complainPanelModelFromMap(String str) => ComplainPanelModel.fromMap(json.decode(str));
+ComplainPanelModel complainPanelModelFromMap(String str) =>
+    ComplainPanelModel.fromMap(json.decode(str));
 
-String complainPanelModelToMap(ComplainPanelModel data) => json.encode(data.toMap());
+String complainPanelModelToMap(ComplainPanelModel data) =>
+    json.encode(data.toMap());
 
 class ComplainPanelModel {
   ComplainPanelModel({
@@ -39,36 +42,34 @@ class ComplainPanelModel {
   int? iduser;
   int? organizationTypeId;
 
-  factory ComplainPanelModel.fromMap(Map<String, dynamic> json) => ComplainPanelModel(
-    complainId: json["complainId"],
-    name: json["name"],
-    email: json["email"],
-    phone: json["phone"],
-    details: json["details"],
-    image: json["image"],
-    status: json["status"],
-    showNotiftoUser: json["showNotiftoUser"],
-    showNotiftoOrg: json["showNotiftoOrg"],
-    iduser: json["iduser"],
-    organizationTypeId: json["organizationTypeId"],
-  );
+  factory ComplainPanelModel.fromMap(Map<String, dynamic> json) =>
+      ComplainPanelModel(
+        complainId: json["complainId"],
+        name: json["name"],
+        email: json["email"],
+        phone: json["phone"],
+        details: json["details"],
+        image: json["image"],
+        status: json["status"],
+        showNotiftoUser: json["showNotiftoUser"],
+        showNotiftoOrg: json["showNotiftoOrg"],
+        iduser: json["iduser"],
+        organizationTypeId: json["organizationTypeId"],
+      );
 
   Map<String, dynamic> toMap() => {
-    "complainId": complainId,
-    "name": name,
-    "email": email,
-    "phone": phone,
-    "details": details,
-    "image": image,
-    "status": status,
-    "showNotiftoUser": showNotiftoUser,
-    "showNotiftoOrg": showNotiftoOrg,
-    "iduser": iduser,
-    "organizationTypeId": organizationTypeId,
-  };
-
-
-
+        "complainId": complainId,
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "details": details,
+        "image": image,
+        "status": status,
+        "showNotiftoUser": showNotiftoUser,
+        "showNotiftoOrg": showNotiftoOrg,
+        "iduser": iduser,
+        "organizationTypeId": organizationTypeId,
+      };
 
   Database? db;
 
@@ -76,31 +77,26 @@ class ComplainPanelModel {
     db = await DBDetails.InitDatabase();
   }
 
-
-
   Future insert(ComplainPanelModel model) async {
-    if(db==null)
-      {
-        await open_Database();
-      }
+    if (db == null) {
+      await open_Database();
+    }
     return await db!.transaction((txn) async {
       int id1 = await txn.rawInsert(
-          "INSERT INTO ${DBDetails.DBTable_COMPLAIN}(name,email,phone,details,status,showNotiftoUser,showNotiftoOrg,iduser,organizationTypeId,image) VALUES(?,?,?,?,?,?,?,?,?,?)",[
-        model.name,
-        model.email,
-        model.phone,
-        model.details,
-        model.status,
-        model.showNotiftoUser,
-        model.showNotiftoOrg,
-        model.iduser,
-        model.organizationTypeId,
-        model.image
-      ]);
-      print('inserted1: $id1');
-
+          "INSERT INTO ${DBDetails.DBTable_COMPLAIN}(name,email,phone,detailsByUser,status,showNotiftoUser,showNotiftoOrg,iduser,organizationsId,image) VALUES(?,?,?,?,?,?,?,?,?,?)",
+          [
+            model.name,
+            model.email,
+            model.phone,
+            model.details,
+            model.status,
+            model.showNotiftoUser,
+            model.showNotiftoOrg,
+            model.iduser,
+            model.organizationTypeId,
+            model.image
+          ]);
+      log('inserted1: $id1');
     });
-
   }
-
 }

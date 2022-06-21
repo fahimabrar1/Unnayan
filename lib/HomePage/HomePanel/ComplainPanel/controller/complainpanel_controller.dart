@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:provider/provider.dart';
+import 'package:unnayan/AlWids.dart';
 import 'package:unnayan/HomePage/HomePanel/ComplainPanel/model/complainpanel_model.dart';
-import 'package:unnayan/HomePage/dbdetails.dart';
 
+class ComplainPanelController extends ControllerMVC {
+  factory ComplainPanelController() => _this ??= ComplainPanelController._();
 
-class ComplainPanelContorller extends ControllerMVC{
-
-  factory ComplainPanelContorller() => _this ??= ComplainPanelContorller._();
-
-  ComplainPanelContorller._()
+  ComplainPanelController._()
       : model = ComplainPanelModel(),
         super();
 
-
-  static ComplainPanelContorller? _this;
+  static ComplainPanelController? _this;
   final ComplainPanelModel model;
 
+  Future<void> submitComplain(
+      ComplainPanelModel model, BuildContext context) async {
+    model.insert(model).whenComplete(() {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Complain Submitted"),
+        ),
+      );
+    });
 
-  void submitComplain(ComplainPanelModel model,BuildContext context)
-  {
-    model.insert(model).whenComplete(()
-    {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("File Attachment"),
-      ),);
+    await Future.delayed(const Duration(seconds: 1), () {
+      Provider.of<WidContainer>(context, listen: false).resetHome();
     });
   }
-
-
 }
