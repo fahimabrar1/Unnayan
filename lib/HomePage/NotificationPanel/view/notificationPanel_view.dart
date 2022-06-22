@@ -29,7 +29,7 @@ class _NotificationPageState extends State<NotificationPage> {
   late List<NotificationPageModel> _foundUsers;
   bool fetchUserData = false;
 
-  var conTroller = NotificationPageContoller();
+  var conTroller = NotificationPageController();
   late BadgeCounter badgeCounter;
   @override
   void initState() {
@@ -91,10 +91,10 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         ),
         (fetchUserData)
-            ? (_foundUsers == null || _foundUsers.length == 0)
-                ? SliverToBoxAdapter(
+            ? (_foundUsers.isEmpty)
+                ? const SliverToBoxAdapter(
                     child: Center(
-                      child: Text("No Notificaitons Found"),
+                      child: Text("No Notifications Found"),
                     ),
                   )
                 : SliverList(
@@ -122,7 +122,10 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Future<List<NotificationPageModel>> getIData(int ID) async {
-    await conTroller.showList(ID, widget.nEnum!, "true").then((value) {
+    await conTroller
+        .showList(ID, widget.nEnum!, "true",
+            context.read<LoginpageModel>().userType.toString())
+        .then((value) {
       log("Bal 2");
       log(value.toString());
 
@@ -146,7 +149,7 @@ class _NotificationPageState extends State<NotificationPage> {
         if (element.name!
             .toLowerCase()
             .contains(enteredKeyword.toLowerCase())) {
-          print(element.name);
+          log(element.name.toString());
           results.add(element);
         }
       }
@@ -157,17 +160,17 @@ class _NotificationPageState extends State<NotificationPage> {
     // Refresh the UI
     setState(() {
       _foundUsers = results;
-      print("Founder LEngth: " + _foundUsers.length.toString());
+      log("Founder LEngth: " + _foundUsers.length.toString());
     });
   }
 }
 
 class NotificationTile extends StatefulWidget {
   final int index;
-  List<NotificationPageModel>? foundUsers;
-  NotificationEnum? nEnum;
+  final List<NotificationPageModel>? foundUsers;
+  final NotificationEnum? nEnum;
 
-  NotificationTile(this.index, this.foundUsers, this.nEnum, {Key? key})
+  const NotificationTile(this.index, this.foundUsers, this.nEnum, {Key? key})
       : super(key: key);
 
   @override
@@ -176,7 +179,7 @@ class NotificationTile extends StatefulWidget {
 
 class _NotificationTileState extends State<NotificationTile> {
   late WidContainer container;
-  NotificationPageContoller controller = NotificationPageContoller();
+  NotificationPageController controller = NotificationPageController();
   late bool gotImage;
   late List<int> displayImage;
 

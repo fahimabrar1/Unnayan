@@ -51,7 +51,12 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
     badgeCounter = context.read<BadgeCounter>();
     widContainer = context.read<WidContainer>();
-    getOrgNotifications();
+    if (context.read<LoginpageModel>().userType == 'user') {
+      getNotificationsFromOrg();
+    } else {
+      getNotificationsFromUser();
+    }
+
     super.initState();
   }
 
@@ -116,16 +121,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  NotificationPageContoller contoller = NotificationPageContoller();
+  NotificationPageController controller = NotificationPageController();
 
-  Future<void> getOrgNotifications() async {
+  Future<void> getNotificationsFromOrg() async {
     List<NotificationPageModel> ls = [];
-    await contoller
+    await controller
         .showList(context.read<LoginpageModel>().iduser!, NotificationEnum.def,
-            "true")
+            "true", 'user')
         .then((value) {
       ls = value!;
-      ls.forEach((element) {
+      for (var element in ls) {
         if (element.showNotiftoUser == 'true' &&
             context.read<LoginpageModel>().userType! == 'user') {
           setState(() {
@@ -135,9 +140,18 @@ class _HomePageState extends State<HomePage> {
           NotificationService().showNotificaiton(element.organizationsId!,
               element.name!, "Gave a feedback, Please Check", 1);
         }
-      });
+      }
+      for (var element in ls) {
+        if (element.showNotiftoUser == 'true' &&
+            context.read<LoginpageModel>().userType! == 'user') {
+          controller.updateComplainNotificationToUserToFalse(
+              element.complainId!, "false");
+        }
+      }
     });
   }
+
+  void getNotificationsFromUser() {}
 }
 
 ///
@@ -146,9 +160,9 @@ class _HomePageState extends State<HomePage> {
 
 class HomePagePanel extends StatefulWidget {
   HomePageEnum enu;
-  int? ID;
+  int? id;
 
-  HomePagePanel(this.enu, this.ID, {Key? key}) : super(key: key);
+  HomePagePanel(this.enu, this.id, {Key? key}) : super(key: key);
 
   @override
   State<HomePagePanel> createState() => _HomePagePanelState();
@@ -156,7 +170,7 @@ class HomePagePanel extends StatefulWidget {
 
 class _HomePagePanelState extends State<HomePagePanel> {
   final _searchController = TextEditingController();
-  final HomePageController homepagecontroller = HomePageController();
+  final HomePageController homePageController = HomePageController();
   late WidContainer widContainer;
   late List<MyMainGrid>? _allUsers;
   late List<MyMainGrid>? _foundUsers;
@@ -168,7 +182,7 @@ class _HomePagePanelState extends State<HomePagePanel> {
     fetchGridData = false;
     widContainer = context.read<WidContainer>();
     log(widget.enu.toString());
-    homePageGetData(widget.enu, widget.ID);
+    homePageGetData(widget.enu, widget.id);
     super.initState();
   }
 
@@ -176,7 +190,7 @@ class _HomePagePanelState extends State<HomePagePanel> {
   void dispose() {
     // TODO: implement dispose
     _searchController.dispose();
-    homepagecontroller.dispose();
+    homePageController.dispose();
     super.dispose();
   }
 
@@ -213,7 +227,11 @@ class _HomePagePanelState extends State<HomePagePanel> {
               ],
             ),
           ),
-          getGridView(),
+          (context.read<LoginpageModel>().userType == 'user')
+              ? getGridView()
+              : const SliverToBoxAdapter(
+                  child: null,
+                ),
           const SliverPadding(
             padding: EdgeInsets.only(bottom: 40),
           ),
@@ -254,7 +272,7 @@ class _HomePagePanelState extends State<HomePagePanel> {
               ),
             )
           : (_foundUsers == null || _foundUsers?.length == 0)
-              ? SliverToBoxAdapter(
+              ? const SliverToBoxAdapter(
                   child: Center(
                     child: Text("No Organizations Found"),
                   ),
@@ -284,8 +302,6 @@ class _HomePagePanelState extends State<HomePagePanel> {
                           onTap: () {
                             setState(() {
                               if (widget.enu == HomePageEnum.org) {
-                                // widget.enu = HomePageEnum.ins;
-                                // widget.ID = int.parse(homepagecontroller.grid![index].organizationTypeId!);
                                 widContainer.setToInst(int.parse(
                                     _foundUsers![index].organizationTypeId!));
                               } else if (widget.enu == HomePageEnum.ins) {
@@ -303,26 +319,26 @@ class _HomePagePanelState extends State<HomePagePanel> {
     );
   }
 
-  Future<void> homePageGetData(HomePageEnum enu, [int? ID]) async {
+  Future<void> homePageGetData(HomePageEnum enu, [int? id]) async {
     log("Called homePageGetData");
     log("Called HomePageEnum: ");
     log(enu.toString());
     log("Called ID: ");
-    log(ID.toString());
+    log(id.toString());
 
     if (enu == HomePageEnum.org) {
-      await homepagecontroller.getHomePageGrid().then((value) {
+      await homePageController.getHomePageGrid().then((value) {
         setState(() {
           fetchGridData = true;
-          _allUsers = homepagecontroller.grid;
+          _allUsers = homePageController.grid;
           _foundUsers = _allUsers;
         });
       });
     } else {
-      await homepagecontroller.getInstitutesGrid(ID!).then((value) {
+      await homePageController.getInstitutesGrid(id!).then((value) {
         setState(() {
           fetchGridData = true;
-          _allUsers = homepagecontroller.grid;
+          _allUsers = homePageController.grid;
           _foundUsers = _allUsers;
         });
       });
@@ -349,7 +365,7 @@ class _HomePagePanelState extends State<HomePagePanel> {
       _foundUsers = results;
     });
 
-    log("Founder LEngth: " + _foundUsers!.length.toString());
+    log("Founder Length: " + _foundUsers!.length.toString());
   }
 }
 

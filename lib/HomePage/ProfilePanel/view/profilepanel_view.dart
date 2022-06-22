@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/AlWids.dart';
@@ -9,8 +7,8 @@ import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/HomePage/ProfilePanel/controller/profilepanel_contorller.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:unnayan/my_vars.dart';
+
 ///
 /// Profile Page Stateless Class for Profile Screen
 ///
@@ -45,8 +43,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late LoginpageModel user;
-  late String username,university;
-  int totalNum =0,historyNum=0,pendingNum =0 ;
+  late String username, university;
+  int totalNum = 0, historyNum = 0, pendingNum = 0;
   ProfileController con = ProfileController();
   @override
   void initState() {
@@ -57,9 +55,9 @@ class _ProfilePageState extends State<ProfilePage> {
     getComplainData();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,30 +66,38 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(
             height: 100,
           ),
-
-      Container(
-        margin: EdgeInsets.only(left: 80,right: 80),
-        child: ClipOval(
-          child: (user.image!.isNotEmpty)?Image(
-            image: MemoryImage(Uint8List.fromList(user.image!)) ,
-            fit: BoxFit.cover,):Image(
-            image: AssetImage('assets/images/unnayan_logo.png') ,
-            fit: BoxFit.cover,),
-
-        ),
-      ),
-      const SizedBox(height: 30),
-      Text(
-        Provider.of<LoginpageModel>(context, listen: false).name.toString(),
-        style: CustomTextStyle.textStyle(MyColor.blackFont, 24),
-      ),
-      const SizedBox(
-        height: 10,
-      ),
-      Text(
-        Provider.of<LoginpageModel>(context, listen: false).universityName.toString(),
-        style: CustomTextStyle.textStyle(MyColor.blackFont, 18),
-      ),
+          Container(
+            margin: EdgeInsets.only(left: 80, right: 80),
+            child: ClipOval(
+              child: (user.image!.isNotEmpty)
+                  ? Image(
+                      image: MemoryImage(Uint8List.fromList(user.image!)),
+                      fit: BoxFit.cover,
+                    )
+                  : Image(
+                      image: AssetImage('assets/images/unnayan_logo.png'),
+                      fit: BoxFit.cover,
+                    ),
+            ),
+          ),
+          const SizedBox(height: 30),
+          Text(
+            Provider.of<LoginpageModel>(context, listen: false).name.toString(),
+            style: CustomTextStyle.textStyle(MyColor.blackFont, 24),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          (context.read<LoginpageModel>().userType == 'user')
+              ? Text(
+                  Provider.of<LoginpageModel>(context, listen: false)
+                      .universityName
+                      .toString(),
+                  style: CustomTextStyle.textStyle(MyColor.blackFont, 18),
+                )
+              : const SizedBox(
+                  height: 30,
+                ),
           const SizedBox(
             height: 30,
           ),
@@ -101,21 +107,41 @@ class _ProfilePageState extends State<ProfilePage> {
             height: 1,
             color: MyColor.blackFont,
           ),
-          ProfileInfoRow('History', historyNum, "History Of Complains",NotificationEnum.recent),
+          ProfileInfoRow(
+              (context.read<LoginpageModel>().userType == 'user')
+                  ? 'History'
+                  : 'Recent',
+              historyNum,
+              "History Of Complains",
+              (context.read<LoginpageModel>().userType == 'user')
+                  ? NotificationEnum.userHistory
+                  : NotificationEnum.orgRecent),
           const Divider(
             indent: 90,
             endIndent: 90,
             height: 1,
             color: MyColor.blackFont,
           ),
-          ProfileInfoRow('Pending Complains', pendingNum, "Pending Complains",NotificationEnum.pending),
+          ProfileInfoRow(
+              'Pending Complains',
+              pendingNum,
+              "Pending Complains",
+              (context.read<LoginpageModel>().userType == 'user')
+                  ? NotificationEnum.userPending
+                  : NotificationEnum.orgPending),
           const Divider(
             indent: 90,
             endIndent: 90,
             height: 1,
             color: MyColor.blackFont,
           ),
-          ProfileInfoRow('Total Complains', totalNum ,"Total Complains",NotificationEnum.total),
+          ProfileInfoRow(
+              'Total Complains',
+              totalNum,
+              "Total Complains",
+              (context.read<LoginpageModel>().userType == 'user')
+                  ? NotificationEnum.userTotal
+                  : NotificationEnum.orgTotal),
           const Divider(
             indent: 90,
             endIndent: 90,
@@ -128,28 +154,31 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future getComplainData() async {
-    print("User: "+user.iduser!.toString());
+    print("User: " + user.iduser!.toString());
     int i = 0;
     int j = 0;
     int k = 0;
-    i =  await con.getTotalData(user.iduser!);
-    j = await con.getPendingData(user.iduser!);
-    k = await con.getHistoryData(user.iduser!);
-    setState(() {
-      totalNum = i;
-      pendingNum = j;
-      historyNum = k;
-    });
-
+    if (context.read<LoginpageModel>().userType == 'user') {
+      i = await con.getTotalUserData(user.iduser!);
+      j = await con.getPendingUserData(user.iduser!);
+      k = await con.getHistoryUserData(user.iduser!);
+      setState(() {
+        totalNum = i;
+        pendingNum = j;
+        historyNum = k;
+      });
+    } else {
+      i = await con.getTotalOrgData(user.iduser!);
+      j = await con.getPendingOrgData(user.iduser!);
+      k = await con.getHistoryOrgData(user.iduser!);
+      setState(() {
+        totalNum = i;
+        pendingNum = j;
+        historyNum = k;
+      });
+    }
   }
-
-
-
-
-
-
 }
-
 
 class ProfileInfoRow extends StatefulWidget {
   final String title;
@@ -157,8 +186,10 @@ class ProfileInfoRow extends StatefulWidget {
   final String notificationTitle;
   final NotificationEnum nEnum;
 
-  const ProfileInfoRow(this.title,
-      this.number, this.notificationTitle,this.nEnum ,{Key? key}) : super(key: key);
+  const ProfileInfoRow(
+      this.title, this.number, this.notificationTitle, this.nEnum,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<ProfileInfoRow> createState() => _ProfileInfoRowState();
@@ -173,6 +204,7 @@ class _ProfileInfoRowState extends State<ProfileInfoRow> {
 
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -212,19 +244,14 @@ class _ProfileInfoRowState extends State<ProfileInfoRow> {
                 ),
               ),
             ),
-            onTap: (){
-
-              widContainer.setToProgileTONotificationPanel(widget.notificationTitle,widget.nEnum);
-              setState(() {
-
-              });
+            onTap: () {
+              widContainer.setToProgileTONotificationPanel(
+                  widget.notificationTitle, widget.nEnum);
+              setState(() {});
             },
           ),
         ),
       ],
     );
   }
-
-
 }
-

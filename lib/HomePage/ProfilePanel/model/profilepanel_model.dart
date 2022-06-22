@@ -1,5 +1,5 @@
-
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
@@ -38,108 +38,146 @@ class ProfileModel {
   Database? db;
 
   factory ProfileModel.fromMap(Map<String, dynamic> json) => ProfileModel(
-    iduser: json["iduser"],
-    username: json["username"],
-    email: json["email"],
-    password: json["password"],
-    phoneNumber: json["phoneNumber"],
-    userType: json["userType"],
-    universityName: json["universityName"],
-    name: json["name"],
-    location: json["location"],
-    image: json["image"],
-  );
+        iduser: json["iduser"],
+        username: json["username"],
+        email: json["email"],
+        password: json["password"],
+        phoneNumber: json["phoneNumber"],
+        userType: json["userType"],
+        universityName: json["universityName"],
+        name: json["name"],
+        location: json["location"],
+        image: json["image"],
+      );
 
   Map<String, dynamic> toMap() => {
-    "username": username,
-    "email": email,
-    "password": password,
-    "phoneNumber": phoneNumber,
-    "userType": userType,
-    "universityName": universityName,
-    "name": name,
-    "location": location,
-    "image": image,
-  };
-
-
+        "username": username,
+        "email": email,
+        "password": password,
+        "phoneNumber": phoneNumber,
+        "userType": userType,
+        "universityName": universityName,
+        "name": name,
+        "location": location,
+        "image": image,
+      };
 
   Future _openDatabase() async {
-
     String path = DBDetails.DBPATH + DBDetails.DBNAME;
     print(path);
 
     db = await openDatabase(path, version: 1);
-    if(db!.isOpen)
-    {
+    if (db!.isOpen) {
       print("Database is Opended");
-
     }
   }
 
   Future open(String path) async {}
 
-
   Future<ProfileModel?> getUser(String? myuser, String? mypassword) async {
     // Get the records
-    if(db==null)
-      {
-        db = await DBDetails.InitDatabase();
-      }
-    List<Map<String, dynamic?>>? list = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_USER} WHERE (username = '$myuser' OR email = '$myuser' OR phoneNumber = '$myuser') AND (password = '$mypassword')");
-    print(list);
-    if(list!.length == 1 )
-    {
+    db ??= await DBDetails.InitDatabase();
+    List<Map<String, dynamic?>>? list = await db?.rawQuery(
+        "SELECT * FROM ${DBDetails.DBTable_USER} WHERE (username = '$myuser' OR email = '$myuser' OR phoneNumber = '$myuser') AND (password = '$mypassword')");
+    log(list.toString());
+    if (list!.length == 1) {
       return ProfileModel.fromMap(list.first);
     }
     return null;
   }
 
-
   Future close() async => db?.close();
 
-  Future<int> getTotalData(int ID)async {
-    if(db==null)
-    {
-      db = await DBDetails.InitDatabase();
-    }
-    print("getTotalData for user :");
-    List<Map<String, dynamic?>>? map = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${ID})");
-    print(map!.length);
-    if(map!=null)
-      {
-        return map.length;
-      }
-    return 0;
-  }
-
-  Future<int> getHistoryData(int ID)async
-  {
-    if(db==null)
-    {
-      db = await DBDetails.InitDatabase();
-    }
-    print("getTotalData for user :");
-    List<Map<String, dynamic?>>? map = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${ID} AND status = 'solved')");
-    print(map!.length);
-    if(map!=null)
-    {
+  Future<int> getTotalUserData(int id) async {
+    db ??= await DBDetails.InitDatabase();
+    log("getTotalData for user :");
+    List<Map<String, dynamic?>>? map = await db?.rawQuery(
+        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${id})");
+    log(map!.length.toString());
+    if (map != null) {
       return map.length;
     }
     return 0;
   }
 
-  Future<int> getPendingData(int ID) async
-  {
-    if(db==null)
-    {
-      db = await DBDetails.InitDatabase();
+  Future<int> getHistoryUserData(int id) async {
+    db ??= await DBDetails.InitDatabase();
+    log("getTotalData for user :");
+    List<Map<String, dynamic?>>? map = await db?.rawQuery(
+        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${id} AND status = 'solved')");
+    log(map!.length.toString());
+    if (map != null) {
+      return map.length;
     }
-    print("getTotalData for user :");
-    List<Map<String, dynamic?>>? map = await db?.rawQuery("SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${ID}) AND status = 'pending'");
-    print(map!.length);
-    if(map!=null)
-    {
+    return 0;
+  }
+
+  Future<int> getPendingUserData(int id) async {
+    db ??= await DBDetails.InitDatabase();
+    log("getTotalData for user :");
+    List<Map<String, dynamic?>>? map = await db?.rawQuery(
+        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${id}) AND status = 'pending'");
+    log(map!.length.toString());
+    if (map != null) {
+      return map.length;
+    }
+    return 0;
+  }
+
+  ///
+  ///
+  /// Organizations Quries.
+  ///
+  ///
+
+  Future<int> getOrgId(int id) async {
+    db ??= await DBDetails.InitDatabase();
+    log("getTotalData for user :");
+    List<Map<String, dynamic?>>? map = await db?.rawQuery(
+        "SELECT organizationsId FROM ${DBDetails.DBTable_ORGANIZATIONS} WHERE (iduser = ${id})");
+    log(map!.length.toString());
+    if (map != null) {
+      return map.first['organizationsId'];
+    }
+    return 0;
+  }
+
+  Future<int> getRecentOrgData(int id) async {
+    db ??= await DBDetails.InitDatabase();
+    log("getTotalData for user :");
+    int newId = await getOrgId(id);
+    List<Map<String, dynamic?>>? map = await db?.rawQuery(
+        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (organizationsId = ${newId} AND status = 'solved')");
+    log(map!.length.toString());
+    if (map != null) {
+      return map.length;
+    }
+    return 0;
+  }
+
+  Future<int> getPendingOrgData(int id) async {
+    db ??= await DBDetails.InitDatabase();
+    log("getTotalData for user :");
+    int newId = await getOrgId(id);
+
+    List<Map<String, dynamic?>>? map = await db?.rawQuery(
+        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (organizationsId = ${newId}) AND status = 'pending'");
+    log(map!.length.toString());
+    if (map != null) {
+      return map.length;
+    }
+    return 0;
+  }
+
+  Future<int> getTotalOrgData(int id) async {
+    db ??= await DBDetails.InitDatabase();
+    log("getTotalData for user :");
+    int newId = await getOrgId(id);
+
+    List<Map<String, dynamic?>>? map = await db?.rawQuery(
+        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (organizationsId = ${newId})");
+    log(map!.length.toString());
+    if (map != null) {
       return map.length;
     }
     return 0;

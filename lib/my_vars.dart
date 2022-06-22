@@ -1,13 +1,12 @@
 double borderRadius = 10;
-enum HomePageEnum{
-  org,
-  ins,
-  complain
-}
+enum HomePageEnum { org, ins, complain }
 
-enum NotificationEnum{
+enum NotificationEnum {
   def,
-  pending,
-  total,
-  recent
+  userPending,
+  userTotal,
+  userHistory,
+  orgPending,
+  orgTotal,
+  orgRecent,
 }

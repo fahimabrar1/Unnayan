@@ -11,15 +11,27 @@ class ProfileController extends ControllerMVC {
   static ProfileController? _this;
   final ProfileModel model;
 
-  Future<int> getTotalData(int ID) async {
-    return await model.getTotalData(ID);
+  Future<int> getTotalUserData(int id) async {
+    return await model.getTotalUserData(id);
   }
 
-  Future<int> getPendingData(int ID) async {
-    return await model.getPendingData(ID);
+  Future<int> getPendingUserData(int id) async {
+    return await model.getPendingUserData(id);
   }
 
-  Future<int> getHistoryData(int ID) async {
-    return await model.getHistoryData(ID);
+  Future<int> getHistoryUserData(int id) async {
+    return await model.getHistoryUserData(id);
+  }
+
+  Future<int> getHistoryOrgData(int id) async {
+    return model.getRecentOrgData(id);
+  }
+
+  Future<int> getTotalOrgData(int id) async {
+    return await model.getTotalOrgData(id);
+  }
+
+  Future<int> getPendingOrgData(int id) async {
+    return await model.getPendingOrgData(id);
   }
 }
