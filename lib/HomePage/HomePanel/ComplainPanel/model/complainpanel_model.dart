@@ -21,26 +21,32 @@ class ComplainPanelModel {
     this.name,
     this.email,
     this.phone,
-    this.details,
+    this.detailsByUser,
     this.image,
     this.status,
     this.showNotiftoUser,
     this.showNotiftoOrg,
     this.iduser,
-    this.organizationTypeId,
+    this.organizationsId,
+    this.detaiilsByOrg,
+    this.repliedToUser,
+    this.repliedToOrg,
   });
 
   String? complainId;
   String? name;
   String? email;
   String? phone;
-  String? details;
+  String? detailsByUser;
   List<int>? image;
   String? status;
   String? showNotiftoUser;
   String? showNotiftoOrg;
   int? iduser;
-  int? organizationTypeId;
+  int? organizationsId;
+  String? detaiilsByOrg;
+  String? repliedToUser;
+  String? repliedToOrg;
 
   factory ComplainPanelModel.fromMap(Map<String, dynamic> json) =>
       ComplainPanelModel(
@@ -48,13 +54,13 @@ class ComplainPanelModel {
         name: json["name"],
         email: json["email"],
         phone: json["phone"],
-        details: json["details"],
+        detailsByUser: json["detailsByUser"],
         image: json["image"],
         status: json["status"],
         showNotiftoUser: json["showNotiftoUser"],
         showNotiftoOrg: json["showNotiftoOrg"],
         iduser: json["iduser"],
-        organizationTypeId: json["organizationTypeId"],
+        organizationsId: json["organizationsId"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -62,13 +68,16 @@ class ComplainPanelModel {
         "name": name,
         "email": email,
         "phone": phone,
-        "details": details,
+        "detailsByUser": detailsByUser,
         "image": image,
         "status": status,
         "showNotiftoUser": showNotiftoUser,
         "showNotiftoOrg": showNotiftoOrg,
         "iduser": iduser,
-        "organizationTypeId": organizationTypeId,
+        "organizationsId": organizationsId,
+        "detaiilsByOrg": detaiilsByOrg,
+        "repliedToUser": repliedToUser,
+        "repliedToOrg": repliedToOrg,
       };
 
   Database? db;
@@ -77,24 +86,26 @@ class ComplainPanelModel {
     db = await DBDetails.InitDatabase();
   }
 
-  Future insert(ComplainPanelModel model) async {
+  Future insertByUser(ComplainPanelModel model) async {
     if (db == null) {
       await open_Database();
     }
     return await db!.transaction((txn) async {
       int id1 = await txn.rawInsert(
-          "INSERT INTO ${DBDetails.DBTable_COMPLAIN}(name,email,phone,detailsByUser,status,showNotiftoUser,showNotiftoOrg,iduser,organizationsId,image) VALUES(?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO ${DBDetails.DBTable_COMPLAIN}(name,email,phone,detailsByUser,status,showNotiftoUser,showNotiftoOrg,iduser,organizationsId,image,repliedToUser,repliedToOrg) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
           [
             model.name,
             model.email,
             model.phone,
-            model.details,
+            model.detailsByUser,
             model.status,
             model.showNotiftoUser,
             model.showNotiftoOrg,
             model.iduser,
-            model.organizationTypeId,
-            model.image
+            model.organizationsId,
+            model.image,
+            model.repliedToUser,
+            model.repliedToOrg
           ]);
       log('inserted1: $id1');
     });

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:unnayan/HomePage/HomePanel/model/homepanel_model.dart';
 import 'package:unnayan/HomePage/NotificationPanel/model/notificationpanel_model.dart';
@@ -35,13 +36,19 @@ class NotificationPageController extends ControllerMVC {
     return V;
   }
 
-  Future<List<int>?> getOrgLogo(int id) async {
-    return model.showORgLogo(id);
+  Future<List<int>?> getTileLogo(int id, BuildContext context) async {
+    return model.getTileLogo(id, context);
   }
 
   Future<void> updateComplainNotificationToUserToFalse(
       int complainId, String showNotifToUserStr) async {
     model.updateComplainNotificationToUserToFalse(
+        complainId, showNotifToUserStr);
+  }
+
+  Future<void> updateComplainNotificationToOrgToFalse(
+      int complainId, String showNotifToUserStr) async {
+    model.updateComplainNotificationToOrgToFalse(
         complainId, showNotifToUserStr);
   }
 }

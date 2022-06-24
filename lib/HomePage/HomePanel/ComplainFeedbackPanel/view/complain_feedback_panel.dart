@@ -10,7 +10,6 @@ import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_color.dart';
 
 class ComplainFeedbackSTL extends StatelessWidget {
-
   NotificationPageModel notificationPageModel;
   ComplainFeedbackSTL(this.notificationPageModel, {Key? key}) : super(key: key);
 
@@ -22,7 +21,8 @@ class ComplainFeedbackSTL extends StatelessWidget {
 
 class ComplainFeedbackPage extends StatefulWidget {
   NotificationPageModel? notificationPageModel;
-  ComplainFeedbackPage(this.notificationPageModel, {Key? key}) : super(key: key);
+  ComplainFeedbackPage(this.notificationPageModel, {Key? key})
+      : super(key: key);
 
   @override
   State<ComplainFeedbackPage> createState() => _ComplainFeedbackPageState();
@@ -30,20 +30,21 @@ class ComplainFeedbackPage extends StatefulWidget {
 
 class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
   late bool isSolved;
-  ComplainFeedbackPanelController controller = ComplainFeedbackPanelController();
+  ComplainFeedbackPanelController controller =
+      ComplainFeedbackPanelController();
   late ComplainFeedBackPanelModel user;
   @override
   void initState() {
     // TODO: implement initState
 
-    if(widget.notificationPageModel!.status == 'solved')
-    {
+    if (widget.notificationPageModel!.status == 'solved') {
       isSolved = true;
-    }else{
+    } else {
       isSolved = false;
     }
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -58,49 +59,54 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
           ),
           FutureBuilder<ComplainFeedBackPanelModel>(
             future: getUser(),
-            builder: (context,snapshot){
-
-              if(snapshot.hasData)
-                {
-                  return  Row(
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
-                       SizedBox(
-                           height:60,
-                           width:60,
-                           child: ClipOval(child: Image(image: MemoryImage(Uint8List.fromList(user.image!),),))),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.username.toString(),
-                            style: CustomTextStyle.textStyle(MyColor.white, 16),
-                          ),
-                          Text(
-                            user.location.toString(),
-                            style: CustomTextStyle.textStyle(MyColor.white, 10),
-                          ),
-                        ],
-                      )
-                    ],
-                  );
-
-                }else{
-                return  Row(
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Row(
                   children: [
                     const SizedBox(
                       width: 20,
                     ),
-                    ClipOval(child: Container(
-                      padding: const EdgeInsets.all(5),
-                      color:MyColor.white,
-                      child: const CircularProgressIndicator(),),),
+                    SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: ClipOval(
+                            child: Image(
+                          image: MemoryImage(
+                            Uint8List.fromList(user.image!),
+                          ),
+                        ))),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.username.toString(),
+                          style: CustomTextStyle.textStyle(MyColor.white, 16),
+                        ),
+                        Text(
+                          user.location.toString(),
+                          style: CustomTextStyle.textStyle(MyColor.white, 10),
+                        ),
+                      ],
+                    )
+                  ],
+                );
+              } else {
+                return Row(
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    ClipOval(
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        color: MyColor.white,
+                        child: const CircularProgressIndicator(),
+                      ),
+                    ),
                     const SizedBox(
                       width: 20,
                     ),
@@ -109,33 +115,38 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
                         SizedBox(
-                            height:2,
-                            width:100,
+                            height: 2,
+                            width: 100,
                             child: LinearProgressIndicator()),
-                        SizedBox(height: 15,),
                         SizedBox(
-                            height:2,
-                            width:100,
+                          height: 15,
+                        ),
+                        SizedBox(
+                            height: 2,
+                            width: 100,
                             child: LinearProgressIndicator()),
-
                       ],
                     )
                   ],
                 );
-
               }
             },
-
           ),
           Container(
             margin: const EdgeInsets.all(20),
             child: Text(
               widget.notificationPageModel!.detailsByUser.toString(),
-              style: CustomTextStyle.textStyle(MyColor.white, 10),
+              style: CustomTextStyle.textStyle(MyColor.white, 14),
               textAlign: TextAlign.justify,
             ),
           ),
-          Image(image: MemoryImage(Uint8List.fromList(widget.notificationPageModel!.image!))),
+          (widget.notificationPageModel!.image != null)
+              ? Image(
+                  image: MemoryImage(
+                    Uint8List.fromList(widget.notificationPageModel!.image!),
+                  ),
+                )
+              : Container(),
           Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -161,14 +172,17 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
           ),
           (isSolved && context.read<LoginpageModel>().userType == 'user')
               ? Container(
-                  margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                  margin:
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                   child: Text(
                     widget.notificationPageModel!.detaiilsByOrg!,
-                    style: CustomTextStyle.textStyle(MyColor.white, 10),
+                    style: CustomTextStyle.textStyle(MyColor.white, 14),
                     textAlign: TextAlign.justify,
                   ),
                 )
-              : (context.read<LoginpageModel>().userType == 'organization')? getInfoPanel():Container(),
+              : (context.read<LoginpageModel>().userType == 'organization')
+                  ? getInfoPanel()
+                  : Container(),
         ],
       )),
     );
@@ -225,11 +239,10 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
     ));
   }
 
-  Future<ComplainFeedBackPanelModel> getUser()async
-  {
-    user = (await controller.getUserData(widget.notificationPageModel!.iduser!))!;
+  Future<ComplainFeedBackPanelModel> getUser() async {
+    user =
+        (await controller.getUserData(widget.notificationPageModel!.iduser!))!;
 
     return user;
-
   }
 }

@@ -5,8 +5,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
+import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_vars.dart';
 
 NotificationPageModel notificationPageModelFromMap(String str) =>
@@ -29,6 +32,8 @@ class NotificationPageModel {
     this.iduser,
     this.organizationsId,
     this.detaiilsByOrg,
+    this.repliedToUser,
+    this.repliedToOrg,
   });
 
   int? complainId;
@@ -43,21 +48,10 @@ class NotificationPageModel {
   int? iduser;
   int? organizationsId;
   String? detaiilsByOrg;
+  String? repliedToUser;
+  String? repliedToOrg;
 
   factory NotificationPageModel.fromMap(Map<String, dynamic> json) {
-    // print("complainId: "+json["complainId"]);
-    // print("name: "+json["name"]);
-    // print("email: "+json["email"].toString());
-    // print("phone: "+json["phone"].toString());
-    // print("detailsByUser: "+json["detailsByUser"].toString());
-    // print("status: "+json["status"].toString());
-    // print("showNotiftoUser: "+json["showNotiftoUser"].toString());
-    // print("showNotiftoOrg: "+json["showNotiftoOrg"].toString());
-    // print("iduser: "+json["iduser"]);
-    // print("organizationsId: "+json["organizationsId"]);
-    // print("detaiilsByOrg:  "+json["detaiilsByOrg"].toString());
-
-    // print("image"+json["image"]);
     return NotificationPageModel(
       complainId: json["complainId"],
       name: json["name"].toString(),
@@ -71,6 +65,8 @@ class NotificationPageModel {
       iduser: json["iduser"],
       organizationsId: json["organizationsId"],
       detaiilsByOrg: json["detaiilsByOrg"].toString(),
+      repliedToUser: json["repliedToUser"].toString(),
+      repliedToOrg: json["repliedToOrg"].toString(),
     );
   }
 
@@ -87,6 +83,8 @@ class NotificationPageModel {
         "iduser": iduser,
         "organizationsId": organizationsId,
         "detaiilsByOrg": detaiilsByOrg,
+        "repliedToUser": repliedToUser,
+        "repliedToOrg": repliedToOrg,
       };
 
   Database? db;
@@ -167,7 +165,7 @@ class NotificationPageModel {
     return null;
   }
 
-  Future<List<int>?> showORgLogo(int id) async {
+  Future<List<int>?> getTileLogo(int id, BuildContext context) async {
     if (db != null) {
       db = await DBDetails.InitDatabase();
     }
@@ -175,8 +173,15 @@ class NotificationPageModel {
     ///
     /// ?Wrong Query
     ///
-    List<Map<String, dynamic>>? maps = await db?.rawQuery(
-        "SELECT image from ${DBDetails.DBTable_ORGANIZATIONS} where organizationsId = ${id}");
+    String query;
+    if (context.read<LoginpageModel>().userType != 'user') {
+      query =
+          "SELECT image from ${DBDetails.DBTable_USER} where iduser = ${id}";
+    } else {
+      query =
+          "SELECT image from ${DBDetails.DBTable_ORGANIZATIONS} where organizationsId = ${id}";
+    }
+    List<Map<String, dynamic>>? maps = await db?.rawQuery(query);
     if (maps!.length == 1) {
       List<int> img = maps.first['image'];
       return img;
@@ -222,5 +227,16 @@ class NotificationPageModel {
       return map.first['organizationsId'];
     }
     return 0;
+  }
+
+  Future<void> updateComplainNotificationToOrgToFalse(
+      int complainId, String showNotifToUserStr) async {
+    db ??= await DBDetails.InitDatabase();
+
+    String query =
+        "UPDATE complain SET showNotiftoOrg = ? WHERE complainId = ?";
+
+    int num = await db!.rawUpdate(query, [showNotifToUserStr, complainId]);
+    log("Updated Row: " + num.toString());
   }
 }

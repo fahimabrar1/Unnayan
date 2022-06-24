@@ -294,16 +294,19 @@ class _ComplainPageState extends State<ComplainPage> {
         phoneController.value.text.isNotEmpty &&
         detailController.value.text.isNotEmpty) {
       ComplainPanelModel model = ComplainPanelModel(
-          name: name,
-          email: email,
-          phone: phone,
-          details: detail,
-          status: "pending",
-          showNotiftoOrg: "ture",
-          showNotiftoUser: "false",
-          iduser: Provider.of<LoginpageModel>(context, listen: false).iduser,
-          organizationTypeId: widget.organizationID,
-          image: fileBytes);
+        name: name,
+        email: email,
+        phone: phone,
+        detailsByUser: detail,
+        status: "pending",
+        showNotiftoOrg: "true",
+        showNotiftoUser: "false",
+        iduser: Provider.of<LoginpageModel>(context, listen: false).iduser,
+        organizationsId: widget.organizationID,
+        image: fileBytes,
+        repliedToOrg: "true",
+        repliedToUser: "false",
+      );
       controller.submitComplain(model, context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

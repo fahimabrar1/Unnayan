@@ -21,8 +21,8 @@ class _InstituteGridPanelState extends State<InstituteGridPanel> {
   final _searchController = TextEditingController();
   final HomePageController homepagecontroller = HomePageController();
   late WidContainer widContainer;
-  late List<MyMainGrid>? _allUsers;
-  late List<MyMainGrid>? _foundUsers;
+  late List<HomeINSPageGrid>? _allUsers;
+  late List<HomeINSPageGrid>? _foundUsers;
   late bool fetchGridData;
   bool InstituesVisible = false;
   @override
@@ -137,7 +137,7 @@ class _InstituteGridPanelState extends State<InstituteGridPanel> {
                             onTap: () {
                               setState(() {
                                 widContainer.setToComplainPage(int.parse(
-                                    _foundUsers![index].organizationTypeId!));
+                                    _foundUsers![index].organizationId!));
                               });
                             },
                           );
@@ -155,14 +155,14 @@ class _InstituteGridPanelState extends State<InstituteGridPanel> {
         .whenComplete(() {
       setState(() {
         fetchGridData = true;
-        _allUsers = homepagecontroller.grid;
+        _allUsers = homepagecontroller.instituesGrid;
         _foundUsers = _allUsers;
       });
     });
   }
 
   void _runFilter(String enteredKeyword) {
-    List<MyMainGrid>? results = [];
+    List<HomeINSPageGrid>? results = [];
     if (enteredKeyword.isEmpty) {
       // if the search field is empty or only contains white-space, we'll display all users
       results = _allUsers;

@@ -16,7 +16,7 @@ class ComplainPanelController extends ControllerMVC {
 
   Future<void> submitComplain(
       ComplainPanelModel model, BuildContext context) async {
-    model.insert(model).whenComplete(() {
+    model.insertByUser(model).whenComplete(() {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Complain Submitted"),

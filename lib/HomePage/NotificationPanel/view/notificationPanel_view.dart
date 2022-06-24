@@ -187,7 +187,7 @@ class _NotificationTileState extends State<NotificationTile> {
   void initState() {
     container = context.read<WidContainer>();
     gotImage = false;
-    getOrgLogo();
+    getTileLogo();
     // TODO: implement initState
     super.initState();
   }
@@ -209,13 +209,13 @@ class _NotificationTileState extends State<NotificationTile> {
                                 width: 50,
                                 child: ClipOval(
                                   child: Container(
-                                    padding: const EdgeInsets.all(5),
                                     color: MyColor.white,
                                     child: (gotImage)
                                         ? Image(
                                             image: MemoryImage(
                                               Uint8List.fromList(displayImage),
                                             ),
+                                            fit: BoxFit.cover,
                                           )
                                         : const CircularProgressIndicator(),
                                   ),
@@ -242,13 +242,13 @@ class _NotificationTileState extends State<NotificationTile> {
                                   width: 50,
                                   child: ClipOval(
                                       child: Container(
-                                    padding: const EdgeInsets.all(5),
                                     color: MyColor.white,
                                     child: (gotImage)
                                         ? Image(
                                             image: MemoryImage(
                                               Uint8List.fromList(displayImage),
                                             ),
+                                            fit: BoxFit.cover,
                                           )
                                         : const CircularProgressIndicator(),
                                   ))),
@@ -281,9 +281,13 @@ class _NotificationTileState extends State<NotificationTile> {
     );
   }
 
-  Future getOrgLogo() async {
+  Future getTileLogo() async {
     return await controller
-        .getOrgLogo(widget.foundUsers![widget.index].organizationsId!)
+        .getTileLogo(
+            (context.read<LoginpageModel>().userType != 'user')
+                ? widget.foundUsers![widget.index].iduser!
+                : widget.foundUsers![widget.index].organizationsId!,
+            context)
         .then((value) {
       setState(() {
         displayImage = value!;
