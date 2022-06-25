@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:unnayan/AlWids.dart';
 import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/HomePage/HomePanel/ComplainFeedbackPanel/controller/complain_feedback_controller.dart';
 import 'package:unnayan/HomePage/HomePanel/ComplainFeedbackPanel/model/complain_feedback_model.dart';
@@ -33,10 +34,12 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
   ComplainFeedbackPanelController controller =
       ComplainFeedbackPanelController();
   late ComplainFeedBackPanelModel user;
+  final detailsByOrg = TextEditingController();
+  bool clickedSubmit = false;
+  final submitFeedbackByOrg = GlobalKey<FormState>();
   @override
   void initState() {
     // TODO: implement initState
-
     if (widget.notificationPageModel!.status == 'solved') {
       isSolved = true;
     } else {
@@ -180,9 +183,17 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
                     textAlign: TextAlign.justify,
                   ),
                 )
-              : (context.read<LoginpageModel>().userType == 'organization')
+              : (!isSolved &&
+                      context.read<LoginpageModel>().userType == 'organization')
                   ? getInfoPanel()
-                  : Container(),
+                  : Container(
+                      margin: EdgeInsets.only(bottom: 30),
+                      child: Text(
+                        widget.notificationPageModel!.detaiilsByOrg!,
+                        style: CustomTextStyle.textStyle(MyColor.white, 14),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ),
         ],
       )),
     );
@@ -190,53 +201,80 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
 
   Widget getInfoPanel() {
     return Form(
+        key: submitFeedbackByOrg,
         child: Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.only(
-            left: 20,
-            right: 20,
-          ),
-          decoration: BoxDecoration(
-            color: MyColor.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: 20,
-              right: 20,
-            ),
-            child: TextField(
-              decoration: const InputDecoration(
-                border: InputBorder.none,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(
+                left: 20,
+                right: 20,
               ),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              minLines: 5,
-              style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            margin: const EdgeInsets.only(right: 20),
-            child: ElevatedButton(
-              onPressed: () {},
-              child: const Text(
-                'Submit',
-                style: TextStyle(color: MyColor.blackFont),
+              decoration: BoxDecoration(
+                color: MyColor.white,
+                borderRadius: BorderRadius.circular(10),
               ),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                  MyColor.greenButton,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                ),
+                child: TextField(
+                  controller: detailsByOrg,
+                  decoration: InputDecoration(
+                    errorText: clickedSubmit ? errorDetailsByOrgText : null,
+                    border: InputBorder.none,
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  minLines: 5,
+                  style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
                 ),
               ),
             ),
-          ),
-        ),
-      ],
-    ));
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                margin: const EdgeInsets.only(right: 20),
+                child: ElevatedButton(
+                  onPressed: insertFeedbackByOrg,
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(color: MyColor.blackFont),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                      MyColor.greenButton,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Future<void> insertFeedbackByOrg() async {
+    setState(() {
+      clickedSubmit = true;
+    });
+    if (detailsByOrg.value.text.isNotEmpty) {
+      await controller
+          .insertFeedbackByOrg(widget.notificationPageModel!.complainId!,
+              detailsByOrg.value.text)
+          .whenComplete(() {
+        Future.delayed(const Duration(seconds: 1)).whenComplete(() {
+          context.read<WidContainer>().resetHome();
+        });
+      });
+    }
+  }
+
+  String? get errorDetailsByOrgText {
+    final text = detailsByOrg.value.text;
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    return null;
   }
 
   Future<ComplainFeedBackPanelModel> getUser() async {

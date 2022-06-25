@@ -1,6 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:unnayan/Components/badge_model.dart';
+import 'package:unnayan/LoginPage/CreateAccount/view/create_acocunt_view.dart';
 import 'package:unnayan/LoginPage/controller/loginpage_controller.dart';
 import 'package:unnayan/my_color.dart';
 
@@ -13,7 +16,7 @@ class LoginPageSTL extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoginPage();
+    return const LoginPage();
   }
 }
 
@@ -33,78 +36,112 @@ class _LoginPageState extends State<LoginPage> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/login_bg.png'),
-              fit: BoxFit.cover,
+        body: WillPopScope(
+          onWillPop: popOut,
+          child: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/login_bg.png'),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(
-                            minHeight: 100, maxHeight: 300),
-                      ),
-                      SizedBox(
-                        child: Image.asset('assets/images/unnayan_logo.png'),
-                        height: 150,
-                        width: 150,
-                      ),
-                      const LoginPageForm(),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      const SelectableText(
-                        "Forgot Password?",
-                        onTap: null,
-                      ),
-                      const Divider(
-                        height: 20,
-                        endIndent: 100,
-                        indent: 100,
-                        color: MyColor.blackFont,
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.resolveWith<Color?>(
-                            (Set<MaterialState> states) {
-                              if (states.contains(MaterialState.disabled)) {
-                                return MyColor.greenButton;
-                              }
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(
+                              minHeight: 100, maxHeight: 300),
+                        ),
+                        SizedBox(
+                          child: Image.asset('assets/images/unnayan_logo.png'),
+                          height: 150,
+                          width: 150,
+                        ),
+                        const LoginPageForm(),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        const SelectableText(
+                          "Forgot Password?",
+                          onTap: null,
+                        ),
+                        const Divider(
+                          height: 20,
+                          endIndent: 100,
+                          indent: 100,
+                          color: MyColor.blackFont,
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color?>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.disabled)) {
+                                  return MyColor.greenButton;
+                                }
 
-                              return null; // Defer to the widget's default.
+                                return null; // Defer to the widget's default.
+                              },
+                            ),
+                          ),
+                          child: TextButton(
+                            child: const Text(
+                              'Create Account',
+                              style: TextStyle(
+                                color: MyColor.blackFont,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (builder) => CreateAcountSTF(),
+                                ),
+                              );
                             },
                           ),
+                          onPressed: null,
                         ),
-                        child: const Text(
-                          'Create Account',
-                          style: TextStyle(
-                            color: MyColor.blackFont,
-                          ),
-                        ),
-                        onPressed: null,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future<bool> popOut() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Are you sure?'),
+            content: const Text('Do you want to exit an App'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 }
 
@@ -127,12 +164,21 @@ class _LoginPageFormState extends State<LoginPageForm> {
   final _passwordController = TextEditingController();
   String? _user, _password;
   bool _userTaped = false;
+  late BadgeCounter badgeCounter;
   @override
   void dispose() {
     // TODO: implement dispose
     _userController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    badgeCounter = context.read<BadgeCounter>();
+
+    super.initState();
   }
 
   @override
@@ -202,6 +248,7 @@ class _LoginPageFormState extends State<LoginPageForm> {
 
     if (errorUserText == null && errorPasswordText == null) {
       con.login(this.context, _user, _password);
+      badgeCounter.resetCounter();
     }
   }
 

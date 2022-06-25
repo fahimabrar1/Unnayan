@@ -40,84 +40,89 @@ class _NotificationPageState extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: MyColor.darkBackground,
-      child: CustomScrollView(slivers: [
-        const SliverToBoxAdapter(
-          child: SizedBox(
-            height: 20,
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Container(
+        color: MyColor.darkBackground,
+        child: CustomScrollView(slivers: [
+          const SliverToBoxAdapter(
+            child: SizedBox(
+              height: 20,
+            ),
           ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                (widget.heading != null) ? widget.heading! : "Notifications",
-                style: CustomTextStyle.textStyle(MyColor.white, 18),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  (widget.heading != null) ? widget.heading! : "Notifications",
+                  style: CustomTextStyle.textStyle(MyColor.white, 18),
+                ),
               ),
             ),
           ),
-        ),
-        SliverToBoxAdapter(
-          child: Container(
-            height: 40,
-            margin: const EdgeInsets.only(left: 20, right: 20),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (val) => _runFilter(val),
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: MyColor.whiteLowOpacity,
-                labelText: "Search",
-                hintText: "Search",
-                suffixIcon: Icon(Icons.search),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: MyColor.blackFont),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10.0),
+          SliverToBoxAdapter(
+            child: Container(
+              height: 40,
+              margin: const EdgeInsets.only(left: 20, right: 20),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (val) => _runFilter(val),
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: MyColor.whiteLowOpacity,
+                  labelText: "Search",
+                  hintText: "Search",
+                  suffixIcon: Icon(Icons.search),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: MyColor.blackFont),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10.0),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        const SliverToBoxAdapter(
-          child: SizedBox(
-            height: 20,
+          const SliverToBoxAdapter(
+            child: SizedBox(
+              height: 20,
+            ),
           ),
-        ),
-        (fetchUserData)
-            ? (_foundUsers.isEmpty)
-                ? const SliverToBoxAdapter(
-                    child: Center(
-                      child: Text("No Notifications Found"),
-                    ),
-                  )
-                : SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return NotificationTile(
-                            index, _foundUsers, widget.nEnum);
-                      },
-                      childCount: _foundUsers.length,
-                    ),
-                  )
-            : const SliverToBoxAdapter(
-                child: Center(
+          (fetchUserData)
+              ? (_foundUsers.isEmpty)
+                  ? const SliverToBoxAdapter(
+                      child: Center(
+                        child: Text("No Notifications Found"),
+                      ),
+                    )
+                  : SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return NotificationTile(
+                              index, _foundUsers, widget.nEnum);
+                        },
+                        childCount: _foundUsers.length,
+                      ),
+                    )
+              : const SliverToBoxAdapter(
                   child: Center(
-                    child: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: CircularProgressIndicator(),
+                    child: Center(
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-      ]),
+        ]),
+      ),
     );
   }
 
@@ -163,6 +168,27 @@ class _NotificationPageState extends State<NotificationPage> {
       log("Founder LEngth: " + _foundUsers.length.toString());
     });
   }
+
+  Future<bool> popOut() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Are you sure?'),
+            content: const Text('Do you want to exit an App'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
 }
 
 class NotificationTile extends StatefulWidget {
@@ -200,39 +226,95 @@ class _NotificationTileState extends State<NotificationTile> {
           children: <Widget>[
             Expanded(
               child: (widget.nEnum == NotificationEnum.def)
-                  ? Card(
-                      color: MyColor.whiteLowOpacity,
-                      child: (widget.foundUsers != null)
-                          ? ListTile(
-                              leading: SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: ClipOval(
-                                  child: Container(
-                                    color: MyColor.white,
-                                    child: (gotImage)
-                                        ? Image(
-                                            image: MemoryImage(
-                                              Uint8List.fromList(displayImage),
-                                            ),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : const CircularProgressIndicator(),
+                  ? (context.read<LoginpageModel>().userType == 'user')
+                      ? Card(
+                          color: MyColor.whiteLowOpacity,
+                          child: (widget.foundUsers != null)
+                              ? ListTile(
+                                  leading: SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: ClipOval(
+                                      child: Container(
+                                        color: MyColor.white,
+                                        child: (gotImage)
+                                            ? Image(
+                                                image: MemoryImage(
+                                                  Uint8List.fromList(
+                                                      displayImage),
+                                                ),
+                                                fit: BoxFit.cover,
+                                              )
+                                            : const CircularProgressIndicator(),
+                                      ),
+                                    ),
                                   ),
+                                  title: Text(widget
+                                      .foundUsers![widget.index].name
+                                      .toString()),
+                                  subtitle: const Text(
+                                      "Gave a feedback, Please Check"),
+                                )
+                              : const Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 30.0,
+                                      bottom: 30,
+                                      left: 50,
+                                      right: 50),
+                                  child:
+                                      Center(child: LinearProgressIndicator()),
                                 ),
-                              ),
-                              title: Text(widget.foundUsers![widget.index].name
-                                  .toString()),
-                              subtitle:
-                                  const Text("Gave a feedback, Please Check"),
-                            )
-                          : const Padding(
-                              padding: EdgeInsets.only(
-                                  top: 30.0, bottom: 30, left: 50, right: 50),
-                              child: Center(child: LinearProgressIndicator()),
-                            ),
-                      elevation: 2,
-                    )
+                          elevation: 2,
+                        )
+                      : Card(
+                          color: MyColor.whiteLowOpacity,
+                          child: (widget.foundUsers != null)
+                              ? ListTile(
+                                  leading: SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: ClipOval(
+                                      child: Container(
+                                        color: MyColor.white,
+                                        child: (gotImage)
+                                            ? Image(
+                                                image: MemoryImage(
+                                                  Uint8List.fromList(
+                                                      displayImage),
+                                                ),
+                                                fit: BoxFit.cover,
+                                              )
+                                            : const CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text(widget
+                                      .foundUsers![widget.index].name
+                                      .toString()),
+                                  subtitle: Text((widget
+                                              .foundUsers![widget.index]
+                                              .detailsByUser!
+                                              .length >
+                                          30)
+                                      ? widget.foundUsers![widget.index]
+                                              .detailsByUser!
+                                              .substring(0, 30)
+                                              .replaceAll('\n', ' ') +
+                                          '...'
+                                      : widget.foundUsers![widget.index]
+                                          .detailsByUser!),
+                                )
+                              : const Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 30.0,
+                                      bottom: 30,
+                                      left: 50,
+                                      right: 50),
+                                  child:
+                                      Center(child: LinearProgressIndicator()),
+                                ),
+                          elevation: 2,
+                        )
                   : Card(
                       color: MyColor.whiteLowOpacity,
                       child: (widget.foundUsers != null)
@@ -254,9 +336,16 @@ class _NotificationTileState extends State<NotificationTile> {
                                   ))),
                               title: Text(widget.foundUsers![widget.index].name
                                   .toString()),
-                              subtitle: Text(widget
-                                  .foundUsers![widget.index].detailsByUser
-                                  .toString()),
+                              subtitle: Text((widget.foundUsers![widget.index]
+                                          .detailsByUser!.length >
+                                      30)
+                                  ? widget.foundUsers![widget.index]
+                                          .detailsByUser!
+                                          .substring(0, 30)
+                                          .replaceAll('\n', ' ') +
+                                      '...'
+                                  : widget.foundUsers![widget.index]
+                                      .detailsByUser!),
                               onTap: () {
                                 container.setToProgileTONFeedbackpanel(
                                     widget.foundUsers![widget.index]);

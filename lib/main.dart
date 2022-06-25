@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:unnayan/AlWids.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/Services/notification_service.dart';
 
@@ -37,6 +38,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<BadgeCounter>(
           create: (context) => BadgeCounter(),
+        ),
+        ChangeNotifierProvider<WidContainer>(
+          create: (context) => WidContainer(),
         ),
       ],
       child: MaterialApp(

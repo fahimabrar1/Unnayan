@@ -62,7 +62,12 @@ class _HomePageState extends State<HomePage> {
     List<Widget> _widgetOptions = <Widget>[
       const HomeSTF(),
       // ComplainPage(),
-      Container(),
+      WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Container(),
+      ),
       // Text(
       //   'Index 1: Messaging',
       //   style: optionStyle,
@@ -159,17 +164,17 @@ class _HomePageState extends State<HomePage> {
         notifId++;
       }
 
-      // for (var element in ls) {
-      //   if (element.showNotiftoUser == 'true' &&
-      //       context.read<LoginpageModel>().userType! == 'user') {
-      //     controller.updateComplainNotificationToUserToFalse(
-      //         element.complainId!, "false");
-      //   } else if (element.showNotiftoOrg == 'true' &&
-      //       context.read<LoginpageModel>().userType! != 'user') {
-      //     controller.updateComplainNotificationToOrgToFalse(
-      //         element.complainId!, "false");
-      //   }
-      // }
+      for (var element in ls) {
+        if (element.showNotiftoUser == 'true' &&
+            context.read<LoginpageModel>().userType! == 'user') {
+          controller.updateComplainNotificationToUserToFalse(
+              element.complainId!, "false");
+        } else if (element.showNotiftoOrg == 'true' &&
+            context.read<LoginpageModel>().userType! != 'user') {
+          controller.updateComplainNotificationToOrgToFalse(
+              element.complainId!, "false");
+        }
+      }
     });
   }
 
@@ -411,6 +416,32 @@ class _HomeSTFState extends State<HomeSTF> {
   Widget build(BuildContext context) {
     log("Provider WidContainer:");
     log(context.watch<WidContainer>().homePanel.toString());
-    return (Provider.of<WidContainer>(context).homePanel);
+    return WillPopScope(
+      child: (Provider.of<WidContainer>(context).homePanel),
+      onWillPop: () async {
+        return false;
+      },
+    );
+  }
+
+  Future<bool> popOut() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Are you sure?'),
+            content: const Text('Do you want to exit an App'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 }
