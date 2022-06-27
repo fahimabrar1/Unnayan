@@ -28,12 +28,13 @@ class _NotificationPageState extends State<NotificationPage> {
   late List<NotificationPageModel> _allUsers;
   late List<NotificationPageModel> _foundUsers;
   bool fetchUserData = false;
-
+  late WidContainer _widContainer;
   var conTroller = NotificationPageController();
   late BadgeCounter badgeCounter;
   @override
   void initState() {
     log("Initializing Notification.");
+    _widContainer = context.read<WidContainer>();
     getIData(context.read<LoginpageModel>().iduser!);
     super.initState();
   }
@@ -45,7 +46,7 @@ class _NotificationPageState extends State<NotificationPage> {
         return false;
       },
       child: Container(
-        color: MyColor.darkBackground,
+        color: MyColor.whiteBG,
         child: CustomScrollView(slivers: [
           const SliverToBoxAdapter(
             child: SizedBox(
@@ -59,32 +60,49 @@ class _NotificationPageState extends State<NotificationPage> {
                 alignment: Alignment.center,
                 child: Text(
                   (widget.heading != null) ? widget.heading! : "Notifications",
-                  style: CustomTextStyle.textStyle(MyColor.white, 18),
+                  style:
+                      CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 18),
                 ),
               ),
             ),
           ),
           SliverToBoxAdapter(
             child: Container(
-              height: 40,
+              height: 50,
               margin: const EdgeInsets.only(left: 20, right: 20),
               child: TextField(
+                autofocus: false,
                 controller: _searchController,
-                onChanged: (val) => _runFilter(val),
-                decoration: const InputDecoration(
+                onChanged: _runFilter,
+                cursorColor: MyColor.newDarkTeal,
+                decoration: InputDecoration(
                   filled: true,
-                  fillColor: MyColor.whiteLowOpacity,
+                  fillColor: MyColor.white,
+                  labelStyle:
+                      CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14),
                   labelText: "Search",
                   hintText: "Search",
-                  suffixIcon: Icon(Icons.search),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: MyColor.blackFont),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: MyColor.newDarkTeal, width: 0.0),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                  ),
+                  suffixIcon: const Material(
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(4),
+                      topRight: Radius.circular(4),
+                    ),
+                    color: MyColor.newDarkTeal,
+                    child: Icon(
+                      Icons.search,
+                      color: MyColor.white,
                     ),
                   ),
+                  contentPadding:
+                      const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                 ),
               ),
             ),
@@ -105,7 +123,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           return NotificationTile(
-                              index, _foundUsers, widget.nEnum);
+                              index, _foundUsers, widget.nEnum, _widContainer);
                         },
                         childCount: _foundUsers.length,
                       ),
@@ -147,7 +165,6 @@ class _NotificationPageState extends State<NotificationPage> {
   void _runFilter(String enteredKeyword) {
     List<NotificationPageModel> results = [];
     if (enteredKeyword.isEmpty) {
-      // if the search field is empty or only contains white-space, we'll display all users
       results = _allUsers;
     } else {
       for (var element in _allUsers) {
@@ -158,8 +175,6 @@ class _NotificationPageState extends State<NotificationPage> {
           results.add(element);
         }
       }
-
-      // we use the toLowerCase() method to make it case-insensitive
     }
 
     // Refresh the UI
@@ -195,8 +210,10 @@ class NotificationTile extends StatefulWidget {
   final int index;
   final List<NotificationPageModel>? foundUsers;
   final NotificationEnum? nEnum;
-
-  const NotificationTile(this.index, this.foundUsers, this.nEnum, {Key? key})
+  final WidContainer _widContainer;
+  const NotificationTile(
+      this.index, this.foundUsers, this.nEnum, this._widContainer,
+      {Key? key})
       : super(key: key);
 
   @override
@@ -228,7 +245,7 @@ class _NotificationTileState extends State<NotificationTile> {
               child: (widget.nEnum == NotificationEnum.def)
                   ? (context.read<LoginpageModel>().userType == 'user')
                       ? Card(
-                          color: MyColor.whiteLowOpacity,
+                          color: MyColor.newLightTeal,
                           child: (widget.foundUsers != null)
                               ? ListTile(
                                   leading: SizedBox(
@@ -254,6 +271,12 @@ class _NotificationTileState extends State<NotificationTile> {
                                       .toString()),
                                   subtitle: const Text(
                                       "Gave a feedback, Please Check"),
+                                  onTap: () {
+                                    widget._widContainer
+                                        .setFromNotificationToFeedbackPanel(
+                                            widget.foundUsers![widget.index]);
+                                    ;
+                                  },
                                 )
                               : const Padding(
                                   padding: EdgeInsets.only(
@@ -267,7 +290,7 @@ class _NotificationTileState extends State<NotificationTile> {
                           elevation: 2,
                         )
                       : Card(
-                          color: MyColor.whiteLowOpacity,
+                          color: MyColor.newLightTeal,
                           child: (widget.foundUsers != null)
                               ? ListTile(
                                   leading: SizedBox(
@@ -303,6 +326,12 @@ class _NotificationTileState extends State<NotificationTile> {
                                           '...'
                                       : widget.foundUsers![widget.index]
                                           .detailsByUser!),
+                                  onTap: () {
+                                    widget._widContainer
+                                        .setFromNotificationToFeedbackPanel(
+                                            widget.foundUsers![widget.index]);
+                                    ;
+                                  },
                                 )
                               : const Padding(
                                   padding: EdgeInsets.only(
@@ -316,7 +345,7 @@ class _NotificationTileState extends State<NotificationTile> {
                           elevation: 2,
                         )
                   : Card(
-                      color: MyColor.whiteLowOpacity,
+                      color: MyColor.newLightTeal,
                       child: (widget.foundUsers != null)
                           ? ListTile(
                               leading: SizedBox(
@@ -347,7 +376,7 @@ class _NotificationTileState extends State<NotificationTile> {
                                   : widget.foundUsers![widget.index]
                                       .detailsByUser!),
                               onTap: () {
-                                container.setToProgileTONFeedbackpanel(
+                                container.setToProfileToFeedbackPanel(
                                     widget.foundUsers![widget.index]);
                               },
                             )
@@ -361,10 +390,10 @@ class _NotificationTileState extends State<NotificationTile> {
             ),
           ],
         ),
-        const Divider(
+        Divider(
           indent: 10,
           endIndent: 10,
-          color: MyColor.blackFont,
+          color: MyColor.blackFont.withOpacity(.5),
         ),
       ],
     );

@@ -50,152 +50,162 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: MyColor.darkBlue,
-      child: SingleChildScrollView(
-          child: Column(
-        children: [
-          const SizedBox(
-            height: 100,
-          ),
-          FutureBuilder<ComplainFeedBackPanelModel>(
-            future: getUser(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Row(
-                  children: [
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: ClipOval(
-                            child: Image(
-                          image: MemoryImage(
-                            Uint8List.fromList(user.image!),
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: MyColor.darkBlue,
+        child: SingleChildScrollView(
+            child: Column(
+          children: [
+            const SizedBox(
+              height: 100,
+            ),
+            FutureBuilder<ComplainFeedBackPanelModel>(
+              future: getUser(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Row(
+                    children: [
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      SizedBox(
+                          height: 60,
+                          width: 60,
+                          child: ClipOval(
+                              child: Image(
+                            image: MemoryImage(
+                              Uint8List.fromList(user.image!),
+                            ),
+                          ))),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user.username.toString(),
+                            style: CustomTextStyle.RubiktextStyle(
+                                MyColor.white, 16),
                           ),
-                        ))),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user.username.toString(),
-                          style: CustomTextStyle.textStyle(MyColor.white, 16),
-                        ),
-                        Text(
-                          user.location.toString(),
-                          style: CustomTextStyle.textStyle(MyColor.white, 10),
-                        ),
-                      ],
-                    )
-                  ],
-                );
-              } else {
-                return Row(
-                  children: [
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    ClipOval(
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        color: MyColor.white,
-                        child: const CircularProgressIndicator(),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        SizedBox(
-                            height: 2,
-                            width: 100,
-                            child: LinearProgressIndicator()),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        SizedBox(
-                            height: 2,
-                            width: 100,
-                            child: LinearProgressIndicator()),
-                      ],
-                    )
-                  ],
-                );
-              }
-            },
-          ),
-          Container(
-            margin: const EdgeInsets.all(20),
-            child: Text(
-              widget.notificationPageModel!.detailsByUser.toString(),
-              style: CustomTextStyle.textStyle(MyColor.white, 14),
-              textAlign: TextAlign.justify,
-            ),
-          ),
-          (widget.notificationPageModel!.image != null)
-              ? Image(
-                  image: MemoryImage(
-                    Uint8List.fromList(widget.notificationPageModel!.image!),
-                  ),
-                )
-              : Container(),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Feed Back:',
-                  style:
-                      CustomTextStyle.textStyle(MyColor.bottomNavItemColor, 14),
-                ),
-                (isSolved)
-                    ? Text(
-                        'Solved',
-                        style:
-                            CustomTextStyle.textStyle(MyColor.greenButton, 14),
+                          Text(
+                            user.location.toString(),
+                            style: CustomTextStyle.RubiktextStyle(
+                                MyColor.white, 10),
+                          ),
+                        ],
                       )
-                    : Text(
-                        'Pending',
-                        style: CustomTextStyle.textStyle(MyColor.red, 14),
+                    ],
+                  );
+                } else {
+                  return Row(
+                    children: [
+                      const SizedBox(
+                        width: 20,
                       ),
-              ],
+                      ClipOval(
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          color: MyColor.white,
+                          child: const CircularProgressIndicator(),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          SizedBox(
+                              height: 2,
+                              width: 100,
+                              child: LinearProgressIndicator()),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          SizedBox(
+                              height: 2,
+                              width: 100,
+                              child: LinearProgressIndicator()),
+                        ],
+                      )
+                    ],
+                  );
+                }
+              },
             ),
-          ),
-          (isSolved && context.read<LoginpageModel>().userType == 'user')
-              ? Container(
-                  margin:
-                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                  child: Text(
-                    widget.notificationPageModel!.detaiilsByOrg!,
-                    style: CustomTextStyle.textStyle(MyColor.white, 14),
-                    textAlign: TextAlign.justify,
-                  ),
-                )
-              : (!isSolved &&
-                      context.read<LoginpageModel>().userType == 'organization')
-                  ? getInfoPanel()
-                  : Container(
-                      margin: EdgeInsets.only(bottom: 30),
-                      child: Text(
-                        widget.notificationPageModel!.detaiilsByOrg!,
-                        style: CustomTextStyle.textStyle(MyColor.white, 14),
-                        textAlign: TextAlign.justify,
-                      ),
+            Container(
+              margin: const EdgeInsets.all(20),
+              child: Text(
+                widget.notificationPageModel!.detailsByUser.toString(),
+                style: CustomTextStyle.RubiktextStyle(MyColor.white, 14),
+                textAlign: TextAlign.justify,
+              ),
+            ),
+            (widget.notificationPageModel!.image != null)
+                ? Image(
+                    image: MemoryImage(
+                      Uint8List.fromList(widget.notificationPageModel!.image!),
                     ),
-        ],
-      )),
+                  )
+                : Container(),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Feed Back:',
+                    style: CustomTextStyle.RubiktextStyle(
+                        MyColor.bottomNavItemColor, 14),
+                  ),
+                  (isSolved)
+                      ? Text(
+                          'Solved',
+                          style: CustomTextStyle.RubiktextStyle(
+                              MyColor.greenButton, 14),
+                        )
+                      : Text(
+                          'Pending',
+                          style:
+                              CustomTextStyle.RubiktextStyle(MyColor.red, 14),
+                        ),
+                ],
+              ),
+            ),
+            (isSolved && context.read<LoginpageModel>().userType == 'user')
+                ? Container(
+                    margin:
+                        const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                    child: Text(
+                      widget.notificationPageModel!.detaiilsByOrg!,
+                      style: CustomTextStyle.RubiktextStyle(MyColor.white, 14),
+                      textAlign: TextAlign.justify,
+                    ),
+                  )
+                : (!isSolved &&
+                        context.read<LoginpageModel>().userType ==
+                            'organization')
+                    ? getInfoPanel()
+                    : Container(
+                        margin: EdgeInsets.only(bottom: 30),
+                        child: Text(
+                          widget.notificationPageModel!.detaiilsByOrg!,
+                          style:
+                              CustomTextStyle.RubiktextStyle(MyColor.white, 14),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+          ],
+        )),
+      ),
     );
   }
 
@@ -227,7 +237,7 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   minLines: 5,
-                  style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
+                  style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
                 ),
               ),
             ),

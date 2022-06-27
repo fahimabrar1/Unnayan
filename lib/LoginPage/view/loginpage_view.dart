@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/Components/badge_model.dart';
+import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/LoginPage/CreateAccount/view/create_acocunt_view.dart';
+import 'package:unnayan/LoginPage/ForgotPassword/view/forgot_password_view.dart';
 import 'package:unnayan/LoginPage/controller/loginpage_controller.dart';
 import 'package:unnayan/my_color.dart';
 
@@ -40,9 +42,13 @@ class _LoginPageState extends State<LoginPage> {
           onWillPop: popOut,
           child: Container(
             decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/login_bg.png'),
-                fit: BoxFit.cover,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  MyColor.newLightTeal,
+                  MyColor.whiteBG,
+                ],
               ),
             ),
             child: Column(
@@ -64,52 +70,26 @@ class _LoginPageState extends State<LoginPage> {
                           width: 150,
                         ),
                         const LoginPageForm(),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        const SelectableText(
-                          "Forgot Password?",
-                          onTap: null,
-                        ),
-                        const Divider(
-                          height: 20,
-                          endIndent: 100,
-                          indent: 100,
-                          color: MyColor.blackFont,
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.disabled)) {
-                                  return MyColor.greenButton;
-                                }
-
-                                return null; // Defer to the widget's default.
-                              },
-                            ),
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 100, vertical: 15),
+                              side: BorderSide(color: MyColor.newMediumTeal),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50))),
+                          child: Text(
+                            'Create Account',
+                            style: CustomTextStyle.RubiktextStyle(
+                                MyColor.newDarkTeal, 14),
                           ),
-                          child: TextButton(
-                            child: const Text(
-                              'Create Account',
-                              style: TextStyle(
-                                color: MyColor.blackFont,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (builder) => CreateAcountSTF(),
                               ),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (builder) => CreateAcountSTF(),
-                                ),
-                              );
-                            },
-                          ),
-                          onPressed: null,
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -196,41 +176,94 @@ class _LoginPageFormState extends State<LoginPageForm> {
               onChanged: (val) {
                 _user = val;
               },
+              cursorColor: MyColor.newDarkTeal,
               decoration: InputDecoration(
+                filled: true,
+                fillColor: MyColor.white,
+                labelStyle:
+                    CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14),
                 hintText: 'User name or Email or Phone',
                 labelText: 'User name or Email or Phone',
                 errorText: _userTaped ? errorUserText : null,
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                ),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                ),
               ),
+            ),
+            SizedBox(
+              height: 20,
             ),
             TextFormField(
               controller: _passwordController,
               onChanged: (val) {
                 _password = val;
               },
+              cursorColor: MyColor.newDarkTeal,
               decoration: InputDecoration(
+                filled: true,
+                fillColor: MyColor.white,
+                labelStyle:
+                    CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14),
                 hintText: 'Password',
-                errorText: _userTaped ? errorPasswordText : null,
+                labelText: 'Password',
+                errorText: _userTaped ? errorUserText : null,
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                ),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide:
+                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: TextButton(
+                child: Text(
+                  "Forgot Password?",
+                  style:
+                      CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 12),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (builder) => ForgotPasswordSTF(),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(
-              height: 30,
+              height: 50,
             ),
             ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color?>(
-                  (Set<MaterialState> states) {
-                    if (states.contains(MaterialState.disabled)) {
-                      return MyColor.blueButton;
-                    }
-
-                    return null; // Defer to the widget's default.
-                  },
-                ),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50)),
               ),
-              child: const Text(
-                'Login',
-                style: TextStyle(
-                  color: MyColor.blackFont,
+              child: Ink(
+                decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        colors: [MyColor.tealBackground, MyColor.newLightTeal]),
+                    borderRadius: BorderRadius.circular(50)),
+                child: Container(
+                  width: 300,
+                  height: 50,
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Login',
+                    style: CustomTextStyle.RubiktextStyle(MyColor.white, 14,
+                        fontWeight: FontWeight.w400),
+                  ),
                 ),
               ),
               onPressed: onLogin,

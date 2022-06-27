@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -25,10 +26,11 @@ class ProfileSTL extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/profile_bg.png'),
-            fit: BoxFit.cover,
-          ),
+          color: MyColor.whiteBG,
+          // image: DecorationImage(
+          //   image: AssetImage('assets/images/profile_bg.png'),
+          //   fit: BoxFit.cover,
+          // ),
         ),
         child: const SingleChildScrollView(child: ProfilePage()),
       ),
@@ -68,27 +70,48 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(
-            height: 100,
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 80, right: 80),
-            child: ClipOval(
-              child: (user.image!.isNotEmpty)
-                  ? Image(
-                      image: MemoryImage(Uint8List.fromList(user.image!)),
-                      fit: BoxFit.cover,
-                    )
-                  : Image(
-                      image: AssetImage('assets/images/unnayan_logo.png'),
-                      fit: BoxFit.cover,
-                    ),
+          SizedBox(
+            height: 120,
+            child: Container(
+              color: MyColor.newLightTeal,
             ),
+          ),
+          Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              Container(
+                height: 100,
+                color: MyColor.newLightTeal,
+              ),
+              SizedBox(
+                height: 200,
+                width: 200,
+                child: ClipOval(
+                  child: Container(
+                    color: MyColor.white,
+                    padding: const EdgeInsets.all(6),
+                    child: ClipOval(
+                      child: (user.image!.isNotEmpty)
+                          ? Image(
+                              image:
+                                  MemoryImage(Uint8List.fromList(user.image!)),
+                              fit: BoxFit.cover,
+                            )
+                          : const Image(
+                              image: const AssetImage(
+                                  'assets/images/unnayan_logo.png'),
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 30),
           Text(
             Provider.of<LoginpageModel>(context, listen: false).name.toString(),
-            style: CustomTextStyle.textStyle(MyColor.blackFont, 24),
+            style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 24),
           ),
           const SizedBox(
             height: 10,
@@ -98,7 +121,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Provider.of<LoginpageModel>(context, listen: false)
                       .universityName
                       .toString(),
-                  style: CustomTextStyle.textStyle(MyColor.blackFont, 18),
+                  style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 18),
                 )
               : const SizedBox(
                   height: 30,
@@ -106,52 +129,47 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(
             height: 30,
           ),
-          const Divider(
+          Divider(
             indent: 90,
             endIndent: 90,
             height: 1,
-            color: MyColor.blackFont,
+            color: MyColor.blackFont.withOpacity(.3),
           ),
-          ProfileInfoRow(
-              (context.read<LoginpageModel>().userType == 'user')
-                  ? 'History'
-                  : 'Recent',
-              historyNum,
-              "History Of Complains",
-              (context.read<LoginpageModel>().userType == 'user')
-                  ? NotificationEnum.userHistory
-                  : NotificationEnum.orgRecent),
-          const Divider(
-            indent: 90,
-            endIndent: 90,
-            height: 1,
-            color: MyColor.blackFont,
+          const SizedBox(
+            height: 30,
           ),
-          ProfileInfoRow(
-              'Pending Complains',
-              pendingNum,
-              "Pending Complains",
-              (context.read<LoginpageModel>().userType == 'user')
-                  ? NotificationEnum.userPending
-                  : NotificationEnum.orgPending),
-          const Divider(
-            indent: 90,
-            endIndent: 90,
-            height: 1,
-            color: MyColor.blackFont,
-          ),
-          ProfileInfoRow(
-              'Total Complains',
-              totalNum,
-              "Total Complains",
-              (context.read<LoginpageModel>().userType == 'user')
-                  ? NotificationEnum.userTotal
-                  : NotificationEnum.orgTotal),
-          const Divider(
-            indent: 90,
-            endIndent: 90,
-            height: 1,
-            color: MyColor.blackFont,
+          Row(
+            children: [
+              Expanded(
+                child: Container(),
+              ),
+              ProfileInfoRowNew(
+                  (context.read<LoginpageModel>().userType == 'user')
+                      ? 'History'
+                      : 'Recent',
+                  historyNum,
+                  "History Of Complains",
+                  (context.read<LoginpageModel>().userType == 'user')
+                      ? NotificationEnum.userHistory
+                      : NotificationEnum.orgRecent),
+              ProfileInfoRowNew(
+                  'Pending Complains',
+                  pendingNum,
+                  "Pending Complains",
+                  (context.read<LoginpageModel>().userType == 'user')
+                      ? NotificationEnum.userPending
+                      : NotificationEnum.orgPending),
+              ProfileInfoRowNew(
+                  'Total Complains',
+                  totalNum,
+                  "Total Complains",
+                  (context.read<LoginpageModel>().userType == 'user')
+                      ? NotificationEnum.userTotal
+                      : NotificationEnum.orgTotal),
+              Expanded(
+                child: Container(),
+              ),
+            ],
           ),
         ],
       ),
@@ -159,7 +177,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future getComplainData() async {
-    print("User: " + user.iduser!.toString());
+    log("User: " + user.iduser!.toString());
     int i = 0;
     int j = 0;
     int k = 0;
@@ -182,6 +200,90 @@ class _ProfilePageState extends State<ProfilePage> {
         historyNum = k;
       });
     }
+  }
+}
+
+class ProfileInfoRowNew extends StatefulWidget {
+  final String title;
+  final int number;
+  final String notificationTitle;
+  final NotificationEnum nEnum;
+  const ProfileInfoRowNew(
+      this.title, this.number, this.notificationTitle, this.nEnum,
+      {Key? key})
+      : super(key: key);
+
+  @override
+  State<ProfileInfoRowNew> createState() => _ProfileInfoRowNewState();
+}
+
+class _ProfileInfoRowNewState extends State<ProfileInfoRowNew> {
+  late WidContainer widContainer;
+  @override
+  void initState() {
+    // TODO: implement initState
+    widContainer = context.read<WidContainer>();
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: 3,
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        child: Center(
+          child: InkWell(
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                  color: MyColor.white,
+                  border: Border.all(color: MyColor.newLightBrown, width: 1),
+                  borderRadius: const BorderRadius.all(Radius.circular(8))),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        widget.title,
+                        textAlign: TextAlign.center,
+                        style: CustomTextStyle.RubiktextStyle(
+                            MyColor.newDarkTeal, 12),
+                      ),
+                    ),
+                  ),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Text(
+                        widget.number.toString(),
+                        style: CustomTextStyle.RubiktextStyle(
+                            MyColor.newDarkTeal, 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              widContainer.setToProgileTONotificationPanel(
+                  widget.notificationTitle, widget.nEnum);
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -225,7 +327,7 @@ class _ProfileInfoRowState extends State<ProfileInfoRow> {
               padding: const EdgeInsets.only(left: 80),
               child: Text(
                 widget.title,
-                style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
+                style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
               ),
             ),
           ),
@@ -244,7 +346,7 @@ class _ProfileInfoRowState extends State<ProfileInfoRow> {
                   ),
                   child: Text(
                     widget.number.toString(),
-                    style: CustomTextStyle.textStyle(MyColor.white, 10),
+                    style: CustomTextStyle.RubiktextStyle(MyColor.white, 10),
                   ),
                 ),
               ),

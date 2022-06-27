@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/LoginPage/CreateAccount/controller/create_account_controller.dart';
 import 'package:unnayan/LoginPage/view/loginpage_view.dart';
 import 'package:unnayan/my_color.dart';
@@ -23,7 +24,7 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
     'Hospital',
     'Shopping Center',
     'Education',
-    'Cinema',
+    'Company',
     'Industry',
     'Dhaka Metro Poline'
   ];
@@ -60,7 +61,7 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: MyColor.tealBackground,
+        backgroundColor: MyColor.newLightTeal,
         body: SingleChildScrollView(
           child: Form(
             key: createAccountKey,
@@ -129,16 +130,18 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                             const Expanded(child: Text("Select User Type: ")),
                             Flexible(
                               child: DropdownButton<String>(
+                                focusColor: MyColor.newDarkTeal,
                                 value: userDropdownValue,
                                 icon: const Icon(
                                   Icons.arrow_downward,
-                                  color: MyColor.white,
+                                  color: MyColor.newDarkBrown,
                                 ),
                                 elevation: 16,
-                                style: const TextStyle(color: MyColor.darkBlue),
+                                style: CustomTextStyle.RubiktextStyle(
+                                    MyColor.newDarkTeal, 12),
                                 underline: Container(
                                   height: 2,
-                                  color: MyColor.darkBlue,
+                                  color: MyColor.newDarkTeal,
                                 ),
                                 onChanged: (String? newValue) {
                                   setState(() {
@@ -178,14 +181,14 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                                       value: orgDropdownValue,
                                       icon: const Icon(
                                         Icons.arrow_downward,
-                                        color: MyColor.white,
+                                        color: MyColor.newDarkBrown,
                                       ),
                                       elevation: 16,
-                                      style: const TextStyle(
-                                          color: MyColor.darkBlue),
+                                      style: CustomTextStyle.RubiktextStyle(
+                                          MyColor.newDarkTeal, 12),
                                       underline: Container(
                                         height: 2,
-                                        color: MyColor.darkBlue,
+                                        color: MyColor.newDarkTeal,
                                       ),
                                       onChanged: (String? newValue) {
                                         setState(() {
@@ -214,8 +217,22 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                       height: 10,
                     ),
                     TextFormField(
-                      decoration: const InputDecoration(
+                      cursorColor: MyColor.newDarkTeal,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColor.white,
+                        labelStyle: CustomTextStyle.RubiktextStyle(
+                            MyColor.newDarkTeal, 14),
                         hintText: 'Full Name',
+                        labelText: 'Full Name',
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
                       ),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
@@ -229,9 +246,17 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         });
                       },
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     TextFormField(
                       controller: usernameTextController,
+                      cursorColor: MyColor.newDarkTeal,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColor.white,
+                        labelStyle: CustomTextStyle.RubiktextStyle(
+                            MyColor.newDarkTeal, 14),
                         suffixIcon: (usernameTextController.value.text.isEmpty)
                             ? null
                             : (validUserName)
@@ -240,13 +265,22 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                                     color: MyColor.greenButton,
                                   )
                                 : RotationTransition(
-                                    turns: new AlwaysStoppedAnimation(45 / 360),
+                                    turns: AlwaysStoppedAnimation(45 / 360),
                                     child: const Icon(
                                       Icons.add_circle_outline,
                                       color: MyColor.red,
                                     ),
                                   ),
                         hintText: 'Username',
+                        labelText: 'Username',
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
                       ),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
@@ -263,14 +297,31 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         });
                       },
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     TextFormField(
-                      decoration: const InputDecoration(
+                      cursorColor: MyColor.newDarkTeal,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColor.white,
+                        labelStyle: CustomTextStyle.RubiktextStyle(
+                            MyColor.newDarkTeal, 14),
                         hintText: 'Email',
+                        labelText: 'Email',
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please Enter Your Enailc';
+                          return 'Please Enter Your Email';
                         }
                         if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
                           return "Please enter a valid email address";
@@ -284,10 +335,27 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         });
                       },
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     TextFormField(
                       obscureText: true,
-                      decoration: const InputDecoration(
+                      cursorColor: MyColor.newDarkTeal,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColor.white,
+                        labelStyle: CustomTextStyle.RubiktextStyle(
+                            MyColor.newDarkTeal, 14),
                         hintText: 'Password',
+                        labelText: 'Password',
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
                       ),
                       keyboardType: TextInputType.visiblePassword,
                       validator: (String? value) {
@@ -302,9 +370,26 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         });
                       },
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     TextFormField(
-                      decoration: const InputDecoration(
+                      cursorColor: MyColor.newDarkTeal,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColor.white,
+                        labelStyle: CustomTextStyle.RubiktextStyle(
+                            MyColor.newDarkTeal, 14),
                         hintText: 'Cell No.',
+                        labelText: 'Cell No.',
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
                       ),
                       keyboardType: TextInputType.phone,
                       validator: (String? value) {
@@ -319,9 +404,26 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         });
                       },
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     TextFormField(
-                      decoration: const InputDecoration(
+                      cursorColor: MyColor.newDarkTeal,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: MyColor.white,
+                        labelStyle: CustomTextStyle.RubiktextStyle(
+                            MyColor.newDarkTeal, 14),
                         hintText: 'Location',
+                        labelText: 'Location',
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: MyColor.newDarkTeal, width: 0.0),
+                        ),
                       ),
                       keyboardType: TextInputType.streetAddress,
                       validator: (String? value) {
@@ -336,10 +438,27 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         });
                       },
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     (ifOrg == false)
                         ? TextFormField(
-                            decoration: const InputDecoration(
+                            cursorColor: MyColor.newDarkTeal,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: MyColor.white,
+                              labelStyle: CustomTextStyle.RubiktextStyle(
+                                  MyColor.newDarkTeal, 14),
                               hintText: 'Institution Name',
+                              labelText: 'Institution Name',
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: MyColor.newDarkTeal, width: 0.0),
+                              ),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: MyColor.newDarkTeal, width: 0.0),
+                              ),
                             ),
                             keyboardType: TextInputType.text,
                             validator: (String? value) {
@@ -358,6 +477,27 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50)),
+                        ),
+                        child: Ink(
+                          decoration: BoxDecoration(
+                              color: MyColor.white,
+                              borderRadius: BorderRadius.circular(50)),
+                          child: Container(
+                            width: 300,
+                            height: 50,
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Submit',
+                              style: CustomTextStyle.RubiktextStyle(
+                                  MyColor.newDarkTeal, 14,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
                         onPressed: () {
                           // Validate will return true if the form is valid, or false if
                           // the form is invalid.
@@ -367,7 +507,6 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                             onSubmit();
                           }
                         },
-                        child: const Text('Submit'),
                       ),
                     ),
                   ],

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:unnayan/my_color.dart';
 
 class CustomTextStyle {
-  static TextStyle textStyle(Color color, double? fontSize) {
-    return GoogleFonts.rubik(color: color, fontSize: fontSize);
+  static TextStyle RubiktextStyle(Color color, double? fontSize,
+      {FontWeight? fontWeight}) {
+    return GoogleFonts.rubik(
+        color: color,
+        fontSize: fontSize,
+        fontWeight: (fontWeight != null) ? fontWeight : FontWeight.normal);
   }
 }

@@ -31,85 +31,91 @@ class _ComplainPageState extends State<ComplainPage> {
   final controller = ComplainPanelController();
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/login_bg.png'),
-          fit: BoxFit.cover,
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/login_bg.png'),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints viewportConstraints) {
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: viewportConstraints.maxHeight,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 50),
-                Row(
-                  children: [
-                    const Expanded(
-                      flex: 2,
-                      child: Padding(
-                        padding: EdgeInsets.all(15),
-                        child: Image(
-                          image: AssetImage('assets/images/unnayan_logo.png'),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 20),
-                        padding: const EdgeInsets.all(10),
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: MyColor.greenButton,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(borderRadius),
+        child: LayoutBuilder(builder:
+            (BuildContext context, BoxConstraints viewportConstraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: viewportConstraints.maxHeight,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 50),
+                  Row(
+                    children: [
+                      const Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Image(
+                            image: AssetImage('assets/images/unnayan_logo.png'),
                           ),
                         ),
-                        child: const Center(
-                          child: FittedBox(
-                            child: Text(
-                              "Please give your authenticcomplain\ngiven the box bellow.If you have \nto need upload any type of photos \nor pdf you can share.Give us some\ninformation about you for contact\nafter solution ",
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          padding: const EdgeInsets.all(10),
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: MyColor.greenButton,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(borderRadius),
+                            ),
+                          ),
+                          child: const Center(
+                            child: FittedBox(
+                              child: Text(
+                                "Please give your authenticcomplain\ngiven the box bellow.If you have \nto need upload any type of photos \nor pdf you can share.Give us some\ninformation about you for contact\nafter solution ",
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 10),
-                  child: Align(
-                    child: Text(
-                      "Please give some Information.",
-                      style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
-                    ),
-                    alignment: Alignment.centerLeft,
+                    ],
                   ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 10),
-                  child: const Divider(
-                    color: MyColor.blackFont,
-                    endIndent: 150,
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-                getInfoPanel(),
-              ],
+                  Container(
+                    margin: const EdgeInsets.only(left: 10),
+                    child: Align(
+                      child: Text(
+                        "Please give some Information.",
+                        style: CustomTextStyle.RubiktextStyle(
+                            MyColor.blackFont, 14),
+                      ),
+                      alignment: Alignment.centerLeft,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 10),
+                    child: const Divider(
+                      color: MyColor.blackFont,
+                      endIndent: 150,
+                    ),
+                  ),
+                  getInfoPanel(),
+                ],
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 
@@ -132,7 +138,7 @@ class _ComplainPageState extends State<ComplainPage> {
               errorText: _userTaped ? errorNameText : null,
             ),
             keyboardType: TextInputType.text,
-            style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
+            style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
           ),
         ),
         Padding(
@@ -150,7 +156,7 @@ class _ComplainPageState extends State<ComplainPage> {
               errorText: _userTaped ? errorEmailText : null,
             ),
             keyboardType: TextInputType.emailAddress,
-            style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
+            style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
           ),
         ),
         Padding(
@@ -168,7 +174,7 @@ class _ComplainPageState extends State<ComplainPage> {
               hintText: 'Phone',
             ),
             keyboardType: TextInputType.phone,
-            style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
+            style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
           ),
         ),
         const SizedBox(
@@ -179,7 +185,7 @@ class _ComplainPageState extends State<ComplainPage> {
           child: Align(
             child: Text(
               "Please give your complaint here.",
-              style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
+              style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
             ),
             alignment: Alignment.centerLeft,
           ),
@@ -205,7 +211,7 @@ class _ComplainPageState extends State<ComplainPage> {
               keyboardType: TextInputType.multiline,
               maxLines: null,
               minLines: 5,
-              style: CustomTextStyle.textStyle(MyColor.blackFont, 14),
+              style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
             ),
           ),
         ),
@@ -231,7 +237,7 @@ class _ComplainPageState extends State<ComplainPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   filename!,
-                  style: CustomTextStyle.textStyle(MyColor.blackFont, 8),
+                  style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 8),
                 ),
               )
             : Container(),

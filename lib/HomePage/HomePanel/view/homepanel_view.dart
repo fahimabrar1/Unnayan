@@ -5,11 +5,11 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/Components/badge_model.dart';
+import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/HomePage/HomePanel/controller/homepanel_controller.dart';
 import 'package:unnayan/HomePage/HomePanel/model/homepanel_model.dart';
 import 'package:unnayan/HomePage/NotificationPanel/controller/notificationpanel_controller.dart';
 import 'package:unnayan/HomePage/NotificationPanel/model/notificationpanel_model.dart';
-import 'package:unnayan/HomePage/NotificationPanel/view/notificationPanel_view.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/Services/notification_service.dart';
 import 'package:unnayan/my_color.dart';
@@ -73,10 +73,7 @@ class _HomePageState extends State<HomePage> {
       //   style: optionStyle,
       // ),
       // ChatPanel(),
-      const NotificationPage(
-        heading: "Notifications",
-        nEnum: NotificationEnum.def,
-      ),
+      Provider.of<WidContainer>(context).notificaitonPanel,
       Provider.of<WidContainer>(context).profilePanel,
       // Text(
       //   'Index 3: Profile',
@@ -90,34 +87,40 @@ class _HomePageState extends State<HomePage> {
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          showSelectedLabels: false,
-          items: <BottomNavigationBarItem>[
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble),
-              label: 'Message',
-            ),
-            BottomNavigationBarItem(
-              icon: (badgeCounter.counter > 0)
-                  ? Badge(
-                      badgeContent: Text(badgeText.counter.toString()),
-                      child: const Icon(Icons.notifications))
-                  : const Icon(Icons.notifications),
-              label: 'Notification',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: MyColor.bottomNavItemColor,
-          unselectedItemColor: MyColor.blackFont,
-          onTap: _onItemTapped,
+        bottomNavigationBar: Theme(
+          data: Theme.of(context).copyWith(
+            // sets the background color of the `BottomNavigationBar`
+            canvasColor: MyColor.newDarkTeal,
+          ),
+          child: BottomNavigationBar(
+            showSelectedLabels: false,
+            items: <BottomNavigationBarItem>[
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.chat_bubble),
+                label: 'Message',
+              ),
+              BottomNavigationBarItem(
+                icon: (badgeCounter.counter > 0)
+                    ? Badge(
+                        badgeContent: Text(badgeText.counter.toString()),
+                        child: const Icon(Icons.notifications))
+                    : const Icon(Icons.notifications),
+                label: 'Notification',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: MyColor.white,
+            unselectedItemColor: MyColor.newLightTeal,
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );
@@ -224,7 +227,7 @@ class _HomePagePanelState extends State<HomePagePanel> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: MyColor.tealBackground,
+      color: MyColor.whiteBG,
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -232,22 +235,41 @@ class _HomePagePanelState extends State<HomePagePanel> {
               children: [
                 const SizedBox(height: 80),
                 Container(
-                  height: 40,
+                  height: 50,
                   margin: const EdgeInsets.all(20),
                   child: TextField(
+                    autofocus: false,
                     controller: _searchController,
                     onChanged: _runFilter,
-                    decoration: const InputDecoration(
+                    cursorColor: MyColor.newDarkTeal,
+                    decoration: InputDecoration(
                       filled: true,
-                      fillColor: MyColor.ash,
+                      fillColor: MyColor.white,
+                      labelStyle: CustomTextStyle.RubiktextStyle(
+                          MyColor.newDarkTeal, 14),
                       labelText: "Search",
                       hintText: "Search",
-                      suffixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10.0),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: MyColor.newDarkTeal, width: 0.0),
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: MyColor.newDarkTeal, width: 0.0),
+                      ),
+                      suffixIcon: Material(
+                        borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(4),
+                          topRight: Radius.circular(4),
+                        ),
+                        color: MyColor.newDarkTeal,
+                        child: Icon(
+                          Icons.search,
+                          color: MyColor.white,
                         ),
                       ),
+                      contentPadding:
+                          EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                     ),
                   ),
                 ),
@@ -283,7 +305,12 @@ class _HomePagePanelState extends State<HomePagePanel> {
                   (context, index) {
                     return InkWell(
                       child: Container(
-                          color: MyColor.white,
+                          decoration: BoxDecoration(
+                              color: MyColor.white,
+                              border: Border.all(
+                                  color: MyColor.newLightTeal, width: 1),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8))),
                           child: const SizedBox(
                             width: 50,
                             height: 50,
@@ -317,13 +344,19 @@ class _HomePagePanelState extends State<HomePagePanel> {
                       (context, index) {
                         return InkWell(
                           child: Container(
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: MyColor.white,
+                              border: Border.all(
+                                  color: MyColor.newLightTeal, width: 1),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Image(
-                              image: MemoryImage(Uint8List.fromList(
-                                  _foundUsers![index].image!)),
-                              fit: BoxFit.cover,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image(
+                                image: MemoryImage(Uint8List.fromList(
+                                    _foundUsers![index].image!)),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           onTap: () {
