@@ -37,9 +37,13 @@ class _ComplainPageState extends State<ComplainPage> {
       },
       child: Container(
         decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/login_bg.png'),
-            fit: BoxFit.cover,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.centerRight,
+            colors: [
+              MyColor.newLightTeal,
+              MyColor.whiteBG,
+            ],
           ),
         ),
         child: LayoutBuilder(builder:
@@ -61,7 +65,8 @@ class _ComplainPageState extends State<ComplainPage> {
                         child: Padding(
                           padding: EdgeInsets.all(15),
                           child: Image(
-                            image: AssetImage('assets/images/unnayan_logo.png'),
+                            image: AssetImage(
+                                'assets/images/unnayan_logo_circle.png'),
                           ),
                         ),
                       ),
@@ -72,7 +77,7 @@ class _ComplainPageState extends State<ComplainPage> {
                           padding: const EdgeInsets.all(10),
                           height: 120,
                           decoration: BoxDecoration(
-                            color: MyColor.greenButton,
+                            color: MyColor.newLightBrown,
                             borderRadius: BorderRadius.all(
                               Radius.circular(borderRadius),
                             ),
@@ -125,53 +130,101 @@ class _ComplainPageState extends State<ComplainPage> {
       children: [
         Padding(
           padding: const EdgeInsets.only(
-            left: 80,
-            right: 80,
+            left: 20,
+            right: 20,
           ),
           child: TextField(
             controller: nameController,
             onChanged: (val) {
               name = val;
             },
+            cursorColor: MyColor.newDarkTeal,
             decoration: InputDecoration(
+              filled: true,
+              fillColor: MyColor.white,
+              labelStyle:
+                  CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14),
               hintText: 'Name',
               errorText: _userTaped ? errorNameText : null,
+              labelText: 'Name',
+              focusedBorder: const UnderlineInputBorder(
+                borderSide:
+                    const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+              ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide:
+                    const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+              ),
             ),
             keyboardType: TextInputType.text,
             style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
           ),
         ),
+        SizedBox(
+          height: 10,
+        ),
         Padding(
           padding: const EdgeInsets.only(
-            left: 80,
-            right: 80,
+            left: 20,
+            right: 20,
           ),
           child: TextField(
             controller: emailController,
             onChanged: (val) {
               email = val;
             },
+            cursorColor: MyColor.newDarkTeal,
             decoration: InputDecoration(
+              filled: true,
+              fillColor: MyColor.white,
+              labelStyle:
+                  CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14),
               hintText: 'Email Address',
               errorText: _userTaped ? errorEmailText : null,
+              labelText: 'Email Address',
+              focusedBorder: const UnderlineInputBorder(
+                borderSide:
+                    const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+              ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide:
+                    const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+              ),
             ),
             keyboardType: TextInputType.emailAddress,
             style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
           ),
         ),
+        SizedBox(
+          height: 10,
+        ),
         Padding(
           padding: const EdgeInsets.only(
-            left: 80,
-            right: 80,
+            left: 20,
+            right: 20,
           ),
           child: TextField(
             controller: phoneController,
             onChanged: (val) {
               phone = val;
             },
+            cursorColor: MyColor.newDarkTeal,
             decoration: InputDecoration(
+              filled: true,
+              fillColor: MyColor.white,
+              labelStyle:
+                  CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14),
               errorText: _userTaped ? errorPhoneText : null,
               hintText: 'Phone',
+              labelText: 'Phone',
+              focusedBorder: const UnderlineInputBorder(
+                borderSide:
+                    const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+              ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide:
+                    const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+              ),
             ),
             keyboardType: TextInputType.phone,
             style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
@@ -195,42 +248,64 @@ class _ComplainPageState extends State<ComplainPage> {
           decoration: const BoxDecoration(
             color: MyColor.white,
           ),
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: 20,
-              right: 20,
-            ),
-            child: TextField(
-              controller: detailController,
-              onChanged: (val) {
-                detail = val;
-              },
-              decoration: const InputDecoration(
-                border: InputBorder.none,
+          child: TextField(
+            controller: detailController,
+            onChanged: (val) {
+              detail = val;
+            },
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide:
+                    const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
               ),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              minLines: 5,
-              style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
             ),
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            minLines: 5,
+            style: CustomTextStyle.RubiktextStyle(MyColor.blackFont, 14),
           ),
         ),
         ElevatedButton(
           onPressed: uploadAttachment,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Text('Upload attachment'), // <-- Text
-              SizedBox(
-                width: 5,
-              ),
-              Icon(
-                // <-- Icon
-                Icons.upload,
-                size: 24.0,
-              ),
-            ],
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.zero,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           ),
+          child: Ink(
+            decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    begin: Alignment.centerLeft,
+                    colors: [MyColor.tealBackground, MyColor.newLightTeal]),
+                borderRadius: BorderRadius.circular(50)),
+            child: Container(
+              width: 300,
+              height: 50,
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Upload Attachment',
+                    style: CustomTextStyle.RubiktextStyle(MyColor.white, 14,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Icon(
+                    // <-- Icon
+                    Icons.upload,
+                    size: 24.0,
+                    color: MyColor.newDarkTeal,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 10,
         ),
         (fileAttached)
             ? Padding(
@@ -241,17 +316,34 @@ class _ComplainPageState extends State<ComplainPage> {
                 ),
               )
             : Container(),
+        SizedBox(
+          height: 10,
+        ),
         ElevatedButton(
           onPressed: onSubmit,
-          child: const Text(
-            'Submit',
-            style: TextStyle(color: MyColor.blackFont),
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.zero,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           ),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(
-              MyColor.greenButton,
+          child: Ink(
+            decoration: BoxDecoration(
+                color: MyColor.newDarkTeal,
+                borderRadius: BorderRadius.circular(50)),
+            child: Container(
+              width: 300,
+              height: 50,
+              alignment: Alignment.center,
+              child: Text(
+                'Submit',
+                style: CustomTextStyle.RubiktextStyle(MyColor.white, 14,
+                    fontWeight: FontWeight.w400),
+              ),
             ),
           ),
+        ),
+        SizedBox(
+          height: 20,
         ),
       ],
     ));

@@ -57,17 +57,13 @@ class _LoginPageState extends State<LoginPage> {
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(
-                              minHeight: 100, maxHeight: 300),
-                        ),
                         SizedBox(
                           child: Image.asset('assets/images/unnayan_logo.png'),
-                          height: 150,
-                          width: 150,
+                          height: 300,
+                          width: 300,
                         ),
                         const LoginPageForm(),
                         OutlinedButton(
