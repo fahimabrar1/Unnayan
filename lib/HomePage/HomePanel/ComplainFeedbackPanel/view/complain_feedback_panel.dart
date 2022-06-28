@@ -57,7 +57,7 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
       child: Container(
         width: double.infinity,
         height: double.infinity,
-        color: MyColor.darkBlue,
+        color: MyColor.newMediumTeal,
         child: SingleChildScrollView(
             child: Column(
           children: [
