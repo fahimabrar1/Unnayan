@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -93,10 +92,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: ClipOval(
                       child: (user.image!.isNotEmpty)
                           ? Image(
-                              image:
-                                  MemoryImage(Uint8List.fromList(user.image!)),
+                              image: NetworkImage(user.image!),
                               fit: BoxFit.cover,
                             )
+                          // Image(
+                          //         image:
+
+                          // MemoryImage(Uint8List.fromList(user.image!)),
+                          //   fit: BoxFit.cover,
+                          // )
                           : const Image(
                               image: const AssetImage(
                                   'assets/images/unnayan_logo.png'),

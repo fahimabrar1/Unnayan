@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
 
@@ -41,20 +40,23 @@ class ComplainFeedBackPanelModel {
     return null;
   }
 
-  Future<void> insertFeedbackByOrg(int complainId, String detailsByOrg) async {
-    db ??= await DBDetails.InitDatabase();
-    String query =
-        "UPDATE ${DBDetails.DBTable_COMPLAIN} SET status = ?,detaiilsByOrg = ? , showNotiftoUser= ?, repliedToUser =? WHERE complainId = ?";
-    int updated = await db!
-        .rawUpdate(query, ['solved', detailsByOrg, 'true', 'true', complainId]);
-    if (updated == 1) {
-      const SnackBar(
-        content: Text('Submitted Feedback'),
-      );
-    } else {
-      const SnackBar(
-        content: Text('Error, Try Again later'),
-      );
-    }
-  }
+  Future<void> insertFeedbackByOrg(
+      String complainId, String detailsByOrg) async {}
+
+  // Future<void> insertFeedbackByOrg(int complainId, String detailsByOrg) async {
+  //   db ??= await DBDetails.InitDatabase();
+  //   String query =
+  //       "UPDATE ${DBDetails.DBTable_COMPLAIN} SET status = ?,detaiilsByOrg = ? , showNotiftoUser= ?, repliedToUser =? WHERE complainId = ?";
+  //   int updated = await db!
+  //       .rawUpdate(query, ['solved', detailsByOrg, 'true', 'true', complainId]);
+  //   if (updated == 1) {
+  //     const SnackBar(
+  //       content: Text('Submitted Feedback'),
+  //     );
+  //   } else {
+  //     const SnackBar(
+  //       content: Text('Error, Try Again later'),
+  //     );
+  //   }
+  // }
 }

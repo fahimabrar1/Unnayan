@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unnayan/HomePage/dbdetails.dart';
 
@@ -89,37 +90,62 @@ class ProfileModel {
   Future close() async => db?.close();
 
   Future<int> getTotalUserData(int id) async {
-    db ??= await DBDetails.InitDatabase();
-    log("getTotalData for user :");
-    List<Map<String, dynamic?>>? map = await db?.rawQuery(
-        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${id})");
-    log(map!.length.toString());
-    if (map != null) {
-      return map.length;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .where('iduser', isEqualTo: id)
+        .get();
+
+    final data = querySnapshot.docs.map((e) => e).toList();
+
+    if (data.isNotEmpty) {
+      log("data not empty");
+      return data.length;
     }
     return 0;
   }
 
+  // Future<int> getTotalUserData(int id) async {
+  //   db ??= await DBDetails.InitDatabase();
+  //   log("getTotalData for user :");
+  //   List<Map<String, dynamic?>>? map = await db?.rawQuery(
+  //       "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${id})");
+  //   log(map!.length.toString());
+  //   if (map != null) {
+  //     return map.length;
+  //   }
+  //   return 0;
+  // }
+
   Future<int> getHistoryUserData(int id) async {
-    db ??= await DBDetails.InitDatabase();
-    log("getTotalData for user :");
-    List<Map<String, dynamic?>>? map = await db?.rawQuery(
-        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${id} AND status = 'solved')");
-    log(map!.length.toString());
-    if (map != null) {
-      return map.length;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .where('iduser', isEqualTo: id)
+        .where('status', isEqualTo: 'solved')
+        .get();
+    final data = querySnapshot.docs.map((e) => e).toList();
+
+    if (data.isNotEmpty) {
+      return data.length;
     }
     return 0;
   }
 
   Future<int> getPendingUserData(int id) async {
-    db ??= await DBDetails.InitDatabase();
-    log("getTotalData for user :");
-    List<Map<String, dynamic?>>? map = await db?.rawQuery(
-        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${id}) AND status = 'pending'");
-    log(map!.length.toString());
-    if (map != null) {
-      return map.length;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .where('iduser', isEqualTo: id)
+        .where('status', isEqualTo: 'pending')
+        .get();
+    final data = querySnapshot.docs.map((e) => e).toList();
+
+    if (data.isNotEmpty) {
+      return data.length;
     }
     return 0;
   }
@@ -136,6 +162,7 @@ class ProfileModel {
     List<Map<String, dynamic?>>? map = await db?.rawQuery(
         "SELECT organizationsId FROM ${DBDetails.DBTable_ORGANIZATIONS} WHERE (iduser = ${id})");
     log(map!.length.toString());
+
     if (map != null) {
       return map.first['organizationsId'];
     }

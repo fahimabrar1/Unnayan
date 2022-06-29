@@ -37,14 +37,13 @@ dependencies:
   sqflite: ^2.0.2+1
   provider: ^6.0.3
   beamer: ^1.5.0
+  firebase_core: ^1.18.0
   firebase_auth: ^3.3.19
   cloud_firestore: ^3.1.17
   firebase_storage: ^10.2.17
   flutter_local_notifications: ^9.5.3+1
   timezone: ^0.8.0
   badges: ^2.0.3
-  flutter_email_sender: ^5.1.0
-  flutter_sms: ^2.3.3
 
 dev_dependencies:
   flutter_test:
@@ -66,7 +65,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icons/unnayan_logo.png"
+  image_path: "assets/icons/unnayan_logo_circle.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

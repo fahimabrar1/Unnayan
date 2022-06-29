@@ -276,7 +276,7 @@ class _LoginPageFormState extends State<LoginPageForm> {
     });
 
     if (errorUserText == null && errorPasswordText == null) {
-      con.login(this.context, _user, _password);
+      con.login(this.context, _user!.trim(), _password!.trim());
       badgeCounter.resetCounter();
     }
   }

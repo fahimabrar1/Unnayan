@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
@@ -353,8 +352,10 @@ class _HomePagePanelState extends State<HomePagePanel> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image(
-                                image: MemoryImage(Uint8List.fromList(
-                                    _foundUsers![index].image!)),
+                                image:
+                                    // MemoryImage(Uint8List.fromList(
+                                    //     _foundUsers![index].image!)),
+                                    NetworkImage(_foundUsers![index].imageDir!),
                                 fit: BoxFit.cover,
                               ),
                             ),

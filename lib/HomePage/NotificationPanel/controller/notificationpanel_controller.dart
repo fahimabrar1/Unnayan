@@ -41,13 +41,13 @@ class NotificationPageController extends ControllerMVC {
   }
 
   Future<void> updateComplainNotificationToUserToFalse(
-      int complainId, String showNotifToUserStr) async {
+      String complainId, String showNotifToUserStr) async {
     model.updateComplainNotificationToUserToFalse(
         complainId, showNotifToUserStr);
   }
 
   Future<void> updateComplainNotificationToOrgToFalse(
-      int complainId, String showNotifToUserStr) async {
+      String complainId, String showNotifToUserStr) async {
     model.updateComplainNotificationToOrgToFalse(
         complainId, showNotifToUserStr);
   }

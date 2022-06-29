@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -160,8 +159,10 @@ class _InstituteGridPanelState extends State<InstituteGridPanel> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image(
-                                  image: MemoryImage(Uint8List.fromList(
-                                      _foundUsers![index].image!)),
+                                  image: NetworkImage(
+                                      _foundUsers![index].imageDir!),
+                                  // MemoryImage(Uint8List.fromList(
+                                  //     _foundUsers![index].image!)),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -182,10 +183,7 @@ class _InstituteGridPanelState extends State<InstituteGridPanel> {
   }
 
   Future<void> InstituteGetData() async {
-    await homepagecontroller
-        .initDatabase()
-        .whenComplete(() => homepagecontroller.getInstitutesGrid(widget.ID!))
-        .whenComplete(() {
+    await homepagecontroller.getInstitutesGrid(widget.ID!).whenComplete(() {
       setState(() {
         fetchGridData = true;
         _allUsers = homepagecontroller.instituesGrid;

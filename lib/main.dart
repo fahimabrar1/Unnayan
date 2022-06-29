@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/AlWids.dart';
@@ -10,12 +14,9 @@ import 'LoginPage/view/loginpage_view.dart';
 Future<void> mainIni() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await Firebase.initializeApp().whenComplete(() {
-  //
-  //   print("completed");
-  //
-  //
-  // });
+  await Firebase.initializeApp().whenComplete(() {
+    print("completed");
+  });
 
   await NotificationService().iniNotification();
   runApp(const MyApp());
@@ -46,15 +47,6 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Unnayan App',
         theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
           primarySwatch: Colors.blue,
         ),
         // home: ChangeNotifierProvider<WidContainer>(

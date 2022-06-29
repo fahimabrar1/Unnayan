@@ -151,9 +151,10 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
             ),
             (widget.notificationPageModel!.image != null)
                 ? Image(
-                    image: MemoryImage(
-                      Uint8List.fromList(widget.notificationPageModel!.image!),
-                    ),
+                    image: NetworkImage(widget.notificationPageModel!.image!),
+                    // MemoryImage(
+                    //   Uint8List.fromList(widget.notificationPageModel!.image!),
+                    // ),
                   )
                 : Container(),
             Padding(

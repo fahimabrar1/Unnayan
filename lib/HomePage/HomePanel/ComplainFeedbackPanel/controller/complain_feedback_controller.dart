@@ -16,7 +16,8 @@ class ComplainFeedbackPanelController extends ControllerMVC {
     return await user.getUserData(ID);
   }
 
-  Future<void> insertFeedbackByOrg(int complainId, String detailsByOrg) async {
+  Future<void> insertFeedbackByOrg(
+      String complainId, String detailsByOrg) async {
     await user.insertFeedbackByOrg(complainId, detailsByOrg);
   }
 }
