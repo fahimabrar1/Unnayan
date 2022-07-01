@@ -1,8 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/LoginPage/ForgotPassword/controller/forgot_password_controller.dart';
+import 'package:unnayan/LoginPage/view/loginpage_view.dart';
 import 'package:unnayan/my_color.dart';
 
 class ForgotPasswordSTF extends StatefulWidget {
@@ -35,7 +37,7 @@ class _ForgotPasswordSTFState extends State<ForgotPasswordSTF> {
         resizeToAvoidBottomInset: false,
         backgroundColor: MyColor.newLightTeal,
         body: SingleChildScrollView(
-          child: (!emailVerified) ? getEmailPasswordView() : getPasswordView(),
+          child: getEmailPasswordView(),
         ),
       ),
     );
@@ -46,7 +48,7 @@ class _ForgotPasswordSTFState extends State<ForgotPasswordSTF> {
       key: emailConfirmed,
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           Padding(
@@ -89,7 +91,7 @@ class _ForgotPasswordSTFState extends State<ForgotPasswordSTF> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 15),
+            padding: const EdgeInsets.only(left: 15),
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(
@@ -98,7 +100,7 @@ class _ForgotPasswordSTFState extends State<ForgotPasswordSTF> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           ElevatedButton(
@@ -135,152 +137,20 @@ class _ForgotPasswordSTFState extends State<ForgotPasswordSTF> {
     );
   }
 
-  Widget getPasswordView() {
-    return Form(
-      key: forgotConfirmed,
-      child: Column(
-        children: [
-          SizedBox(
-            height: 50,
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 5),
-            child: TextFormField(
-              obscureText: true,
-              cursorColor: MyColor.newDarkTeal,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: MyColor.white,
-                labelStyle:
-                    CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14),
-                hintText: 'Type Password',
-                errorText: _errorText,
-                labelText: 'Type Password',
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
-                ),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
-                ),
-              ),
-              onChanged: (val) {
-                _pass = val.trim();
-              },
-              keyboardType: TextInputType.emailAddress,
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please Enter Your Password';
-                }
-
-                return null;
-              },
-            ),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 5),
-            child: TextFormField(
-              obscureText: true,
-              cursorColor: MyColor.newDarkTeal,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: MyColor.white,
-                labelStyle:
-                    CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14),
-                hintText: 'Re-Type Password',
-                errorText: _errorText,
-                labelText: 'Re-Type Password',
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
-                ),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
-                ),
-              ),
-              onChanged: (val) {
-                _repass = val.trim();
-              },
-              keyboardType: TextInputType.emailAddress,
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please Enter Your Password';
-                }
-
-                return null;
-              },
-            ),
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50)),
-            ),
-            child: Ink(
-              decoration: BoxDecoration(
-                  color: MyColor.white,
-                  borderRadius: BorderRadius.circular(50)),
-              child: Container(
-                width: 300,
-                height: 50,
-                alignment: Alignment.center,
-                child: Text(
-                  'Change Password',
-                  style: CustomTextStyle.RubiktextStyle(MyColor.newDarkTeal, 14,
-                      fontWeight: FontWeight.w400),
-                ),
-              ),
-            ),
-            onPressed: () {
-              if (forgotConfirmed.currentState!.validate()) {
-                // Process data.
-
-                onPassVerify();
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Future onVerify() async {
     setState(() {
       _errorText = null;
     });
-    bool val = await forgotPasswordController.onVerifiedEmail(_email);
+    bool val = await forgotPasswordController.onVerifiedEmail(_email, context);
     log(_email.toString());
     log(val.toString());
     if (val) {
-      Future.delayed(Duration(seconds: 1));
-      setState(() {
-        emailVerified = true;
-      });
+      Future.delayed(const Duration(seconds: 1));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (builder) => LoginPageSTL()));
     } else {
       setState(() {
         _errorText = "User does not exits.";
-      });
-    }
-  }
-
-  void onPassVerify() {
-    setState(() {
-      _errorText = null;
-    });
-    if (_pass == _repass) {
-      forgotPasswordController.resetPass(_pass, _email, context);
-      Future.delayed(Duration(seconds: 1));
-    } else {
-      setState(() {
-        _errorText = "Password Does Not Match";
       });
     }
   }

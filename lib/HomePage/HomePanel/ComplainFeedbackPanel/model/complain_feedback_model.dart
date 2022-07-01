@@ -1,5 +1,8 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:unnayan/HomePage/dbdetails.dart';
 
 class ComplainFeedBackPanelModel {
   ComplainFeedBackPanelModel({
@@ -11,52 +14,59 @@ class ComplainFeedBackPanelModel {
 
   int? iduser;
   String? username;
-  List<int>? image;
+  String? image;
   String? location;
 
   Database? db;
 
-  factory ComplainFeedBackPanelModel.fromMap(Map<String, dynamic> json) {
+  factory ComplainFeedBackPanelModel.fromMap(QueryDocumentSnapshot json) {
     return ComplainFeedBackPanelModel(
-      iduser: json["iduser"],
-      username: json["username"].toString(),
-      image: json["image"],
-      location: json["location"],
+      iduser: json.get('iduser'),
+      username: json.get('name'),
+      image: json.get('image'),
+      location: json.get('location'),
     );
   }
 
   Future<ComplainFeedBackPanelModel?> getUserData(int ID) async {
-    if (db == null) {
-      db = await DBDetails.InitDatabase();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('users')
+        .where('iduser', isEqualTo: ID)
+        .get();
+    final data = querySnapshot.docs.map((e) => e);
+    if (data.isNotEmpty) {
+      for (var element in data) {
+        ComplainFeedBackPanelModel user =
+            ComplainFeedBackPanelModel.fromMap(element);
+        String imgURl = user.image!;
+        FirebaseStorage storage = FirebaseStorage.instance;
+        log(storage.toString());
+        Reference ref = storage.refFromURL(imgURl);
+        await ref.getDownloadURL().then((value) => user.image = value);
+        log("Download URL: " + imgURl);
+        return user;
+      }
+    } else {
+      return null;
     }
-    List<Map<String, dynamic>>? maps = await db!.rawQuery(
-        "SELECT iduser,username,image,location from user where iduser = ${ID}");
-    if (maps.length == 1) {
-      ComplainFeedBackPanelModel user =
-          ComplainFeedBackPanelModel.fromMap(maps[0]);
-      // print(user.username);
-      return user;
-    }
-    return null;
   }
 
   Future<void> insertFeedbackByOrg(
-      String complainId, String detailsByOrg) async {}
-
-  // Future<void> insertFeedbackByOrg(int complainId, String detailsByOrg) async {
-  //   db ??= await DBDetails.InitDatabase();
-  //   String query =
-  //       "UPDATE ${DBDetails.DBTable_COMPLAIN} SET status = ?,detaiilsByOrg = ? , showNotiftoUser= ?, repliedToUser =? WHERE complainId = ?";
-  //   int updated = await db!
-  //       .rawUpdate(query, ['solved', detailsByOrg, 'true', 'true', complainId]);
-  //   if (updated == 1) {
-  //     const SnackBar(
-  //       content: Text('Submitted Feedback'),
-  //     );
-  //   } else {
-  //     const SnackBar(
-  //       content: Text('Error, Try Again later'),
-  //     );
-  //   }
-  // }
+      String complainId, String detailsByOrg) async {
+    await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .doc(complainId)
+        .update({
+          "status": "status",
+          "detaiilsByOrg": detailsByOrg,
+          "showNotiftoUser": "true",
+          "repliedToUser": "true",
+        })
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
 }

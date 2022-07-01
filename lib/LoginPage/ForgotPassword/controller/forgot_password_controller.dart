@@ -11,16 +11,11 @@ class ForgotPasswordController extends ControllerMVC {
   static ForgotPasswordController? _this;
   final ForgotPasswordModel model;
 
-  Future<bool> onVerifiedEmail(String? email) async {
+  Future<bool> onVerifiedEmail(String? email, BuildContext context) async {
     bool val = false;
-    await model.onVerifiedEmail(email).then((value) {
+    await model.onVerifiedEmail(email, context).then((value) {
       val = value;
     });
     return val;
-  }
-
-  Future<void> resetPass(
-      String? pass, String? email, BuildContext context) async {
-    await model.resetPass(pass, email, context);
   }
 }

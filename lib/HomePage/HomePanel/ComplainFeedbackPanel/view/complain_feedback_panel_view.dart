@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/AlWids.dart';
@@ -78,9 +76,7 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
                           width: 60,
                           child: ClipOval(
                               child: Image(
-                            image: MemoryImage(
-                              Uint8List.fromList(user.image!),
-                            ),
+                            image: NetworkImage(user.image!),
                           ))),
                       const SizedBox(
                         width: 20,

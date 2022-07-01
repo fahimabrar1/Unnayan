@@ -2,18 +2,14 @@
 //
 //     final complainPanelModel = complainPanelModelFromMap(jsonString);
 
-import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../../dbdetails.dart';
-
-ComplainPanelModel complainPanelModelFromMap(String str) =>
-    ComplainPanelModel.fromMap(json.decode(str));
-
-String complainPanelModelToMap(ComplainPanelModel data) =>
-    json.encode(data.toMap());
 
 class ComplainPanelModel {
   ComplainPanelModel({
@@ -39,6 +35,7 @@ class ComplainPanelModel {
   String? phone;
   String? detailsByUser;
   List<int>? image;
+  // String? image;
   String? status;
   String? showNotiftoUser;
   String? showNotiftoOrg;
@@ -63,13 +60,13 @@ class ComplainPanelModel {
         organizationsId: json["organizationsId"],
       );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap(String filename) => {
         "complainId": complainId,
         "name": name,
         "email": email,
         "phone": phone,
         "detailsByUser": detailsByUser,
-        "image": image,
+        "image": "gs://unnayan-e10b9.appspot.com/" + filename,
         "status": status,
         "showNotiftoUser": showNotiftoUser,
         "showNotiftoOrg": showNotiftoOrg,
@@ -86,28 +83,26 @@ class ComplainPanelModel {
     db = await DBDetails.InitDatabase();
   }
 
-  Future insertByUser(ComplainPanelModel model) async {
+  Future insertByUser(ComplainPanelModel model, String filename) async {
+    final storageRef = FirebaseStorage.instance.ref();
+
+    final imgRef = storageRef.child(filename);
+    try {
+      CollectionReference users = FirebaseFirestore.instance
+          .collection('db')
+          .doc('unnayan')
+          .collection('complain');
+      log("THE IMAGE" + imgRef.toString());
+      log("THE IMAGE NAME:" + imgRef.name);
+
+      users.add(model.toMap(filename)).then((value) {
+        users.doc(value.id).update({'complainId': value.id});
+      });
+
+      await imgRef.putData(Uint8List.fromList(model.image!));
+    } catch (e) {}
     if (db == null) {
       await open_Database();
     }
-    return await db!.transaction((txn) async {
-      int id1 = await txn.rawInsert(
-          "INSERT INTO ${DBDetails.DBTable_COMPLAIN}(name,email,phone,detailsByUser,status,showNotiftoUser,showNotiftoOrg,iduser,organizationsId,image,repliedToUser,repliedToOrg) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
-          [
-            model.name,
-            model.email,
-            model.phone,
-            model.detailsByUser,
-            model.status,
-            model.showNotiftoUser,
-            model.showNotiftoOrg,
-            model.iduser,
-            model.organizationsId,
-            model.image,
-            model.repliedToUser,
-            model.repliedToOrg
-          ]);
-      log('inserted1: $id1');
-    });
   }
 }

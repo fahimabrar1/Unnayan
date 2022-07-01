@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:unnayan/HomePage/dbdetails.dart';
 
 CreateAccountModel createAccountModelFromMap(String str) =>
     CreateAccountModel.fromMap(json.decode(str));
@@ -13,7 +16,7 @@ String createAccountModelToMap(CreateAccountModel data) =>
 class CreateAccountModel {
   CreateAccountModel({
     this.iduser,
-    this.username,
+    this.filename,
     this.email,
     this.password,
     this.phoneNumber,
@@ -25,7 +28,7 @@ class CreateAccountModel {
   });
 
   String? iduser;
-  String? username;
+  String? filename;
   String? email;
   String? password;
   String? phoneNumber;
@@ -38,9 +41,8 @@ class CreateAccountModel {
   factory CreateAccountModel.fromMap(Map<String, dynamic> json) =>
       CreateAccountModel(
         iduser: json["iduser"],
-        username: json["username"],
+        filename: json["username"],
         email: json["email"],
-        password: json["password"],
         phoneNumber: json["phoneNumber"],
         userType: json["userType"],
         universityName: json["universityName"],
@@ -51,7 +53,6 @@ class CreateAccountModel {
 
   Map<String, dynamic> toMap() => {
         "iduser": iduser,
-        "username": username,
         "email": email,
         "password": password,
         "phoneNumber": phoneNumber,
@@ -65,7 +66,7 @@ class CreateAccountModel {
   Database? db;
 
   Future<void> createAcccountForUser(
-      {String? username,
+      {String? filename,
       String? email,
       String? phoneNumber,
       String? password,
@@ -74,39 +75,61 @@ class CreateAccountModel {
       String? universityName,
       String? name,
       String? location}) async {
-    db ??= await DBDetails.InitDatabase();
-    String query =
-        "INSERT INTO ${DBDetails.DBTable_USER}(username, email, phoneNumber, password, userType, image, universityName, name, location)VALUES (?,?,?,?,?,?,?,?,?)";
+    try {
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email!,
+        password: password!,
+      )
+          .whenComplete(() async {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('db')
+            .doc('unnayan')
+            .collection('users')
+            .get();
+        final userData = querySnapshot.docs.map((e) => e).toList();
+        int newId = userData.length + 1;
+        log("USers Length: " + newId.toString());
 
-    int userId = await db!.rawInsert(query, [
-      username,
-      email,
-      phoneNumber,
-      password,
-      userType,
-      image,
-      universityName,
-      name,
-      location
-    ]);
+        // Create a storage reference from our app
+        final storageRef = FirebaseStorage.instance.ref();
 
-    log("Inserted Into users :" + userId.toString());
-  }
-
-  Future<bool> checkUserNameFromDB(String username) async {
-    db ??= await DBDetails.InitDatabase();
-    List<Map<String, dynamic>> map = await db!.rawQuery(
-        "select username from ${DBDetails.DBTable_USER} where (username = '$username')");
-
-    if (map.isNotEmpty) {
-      return true;
+        // Create a reference to "mountains.jpg"
+        final imgRef = storageRef.child(filename!);
+        try {
+          // Upload raw data.
+          await imgRef.putData(Uint8List.fromList(image!));
+          Map<String, dynamic> user = {
+            "iduser": newId,
+            "location": location,
+            "name": name,
+            "image": "gs://unnayan-e10b9.appspot.com/" + filename,
+            "university": universityName,
+            "userType": userType
+          };
+          await FirebaseFirestore.instance
+              .collection('db')
+              .doc('unnayan')
+              .collection('users')
+              .doc(email)
+              .set(user);
+        } catch (e) {
+          // ...
+        }
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        log('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        log('The account already exists for that email.');
+      }
+    } catch (e) {
+      log(e.toString());
     }
-
-    return false;
   }
 
   Future<void> createAccountForOrg(
-      {String? username,
+      {String? filename,
       String? email,
       String? phoneNumber,
       String? password,
@@ -115,27 +138,75 @@ class CreateAccountModel {
       String? name,
       String? location,
       int? orgType}) async {
-    db ??= await DBDetails.InitDatabase();
-    String query =
-        "INSERT INTO ${DBDetails.DBTable_USER}(username, email, phoneNumber, password, userType, image, name, location)VALUES (?,?,?,?,?,?,?,?)";
+    try {
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email!,
+        password: password!,
+      )
+          .whenComplete(() async {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('db')
+            .doc('unnayan')
+            .collection('users')
+            .get();
+        final userData = querySnapshot.docs.map((e) => e).toList();
+        int newId = userData.length + 1;
+        log("USers Length: " + newId.toString());
+        // Create a storage reference from our app
+        final storageRef = FirebaseStorage.instance.ref();
 
-    int userId = await db!.rawInsert(query, [
-      username,
-      email,
-      phoneNumber,
-      password,
-      userType,
-      image,
-      name,
-      location
-    ]);
-
-    log("Inserted Into users :" + userId.toString());
-    String queryForOrgType =
-        "INSERT INTO ${DBDetails.DBTable_ORGANIZATIONS}(name, image, organizationTypeId, iduser)VALUES (?,?,?,?);";
-    int orgzId =
-        await db!.rawInsert(queryForOrgType, [name, image, orgType, userId]);
-
-    log("Inserted Into Organizations :" + orgzId.toString());
+        // Create a reference to "mountains.jpg"
+        final imgRef = storageRef.child(filename!);
+        try {
+          // Upload raw data.
+          await imgRef.putData(Uint8List.fromList(image!));
+          Map<String, dynamic> user = {
+            "iduser": newId,
+            "location": location,
+            "name": name,
+            "image": "gs://unnayan-e10b9.appspot.com/" + filename,
+            "university": null,
+            "userType": userType
+          };
+          await FirebaseFirestore.instance
+              .collection('db')
+              .doc('unnayan')
+              .collection('users')
+              .doc(email)
+              .set(user);
+          QuerySnapshot querySnapshot2 = await FirebaseFirestore.instance
+              .collection('db')
+              .doc('unnayan')
+              .collection('organizations')
+              .get();
+          final userData2 = querySnapshot2.docs.map((e) => e).toList();
+          int userlen = userData2.length + 1;
+          Map<String, dynamic> orguser = {
+            "iduser": newId,
+            "name": name,
+            "image": "gs://unnayan-e10b9.appspot.com/" + filename,
+            "organizationTypeId": orgType.toString(),
+            "organizationsId": userlen.toString()
+          };
+          await FirebaseFirestore.instance
+              .collection('db')
+              .doc('unnayan')
+              .collection('organizations')
+              .doc(name)
+              .set(orguser);
+        } catch (e) {
+          // ...
+        }
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        log('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        log('The account already exists for that email.');
+      }
+    } catch (e) {
+      log(e.toString());
+    }
   }
 }

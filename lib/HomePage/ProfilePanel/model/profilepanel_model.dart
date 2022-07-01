@@ -106,18 +106,6 @@ class ProfileModel {
     return 0;
   }
 
-  // Future<int> getTotalUserData(int id) async {
-  //   db ??= await DBDetails.InitDatabase();
-  //   log("getTotalData for user :");
-  //   List<Map<String, dynamic?>>? map = await db?.rawQuery(
-  //       "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (iduser = ${id})");
-  //   log(map!.length.toString());
-  //   if (map != null) {
-  //     return map.length;
-  //   }
-  //   return 0;
-  // }
-
   Future<int> getHistoryUserData(int id) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('db')
@@ -155,57 +143,79 @@ class ProfileModel {
   /// Organizations Quries.
   ///
   ///
-
   Future<int> getOrgId(int id) async {
-    db ??= await DBDetails.InitDatabase();
-    log("getTotalData for user :");
-    List<Map<String, dynamic?>>? map = await db?.rawQuery(
-        "SELECT organizationsId FROM ${DBDetails.DBTable_ORGANIZATIONS} WHERE (iduser = ${id})");
-    log(map!.length.toString());
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('organizations')
+        .where('iduser', isEqualTo: id.toString())
+        .get();
 
-    if (map != null) {
-      return map.first['organizationsId'];
+    final data = querySnapshot.docs.map((e) => e).toList();
+    if (data.isNotEmpty) {
+      for (var element in data) {
+        return int.parse(element.get('organizationsId'));
+      }
     }
+
     return 0;
   }
 
   Future<int> getRecentOrgData(int id) async {
-    db ??= await DBDetails.InitDatabase();
-    log("getTotalData for user :");
-    int newId = await getOrgId(id);
-    List<Map<String, dynamic?>>? map = await db?.rawQuery(
-        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (organizationsId = ${newId} AND status = 'solved')");
-    log(map!.length.toString());
-    if (map != null) {
-      return map.length;
+    id = await getOrgId(id);
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .where('organizationsId', isEqualTo: id)
+        .where('status', isEqualTo: 'solved')
+        .get();
+
+    final data = querySnapshot.docs.map((e) => e).toList();
+
+    if (data.isNotEmpty) {
+      log("data not empty");
+      return data.length;
     }
     return 0;
   }
 
   Future<int> getPendingOrgData(int id) async {
-    db ??= await DBDetails.InitDatabase();
-    log("getTotalData for user :");
-    int newId = await getOrgId(id);
+    id = await getOrgId(id);
 
-    List<Map<String, dynamic?>>? map = await db?.rawQuery(
-        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (organizationsId = ${newId}) AND status = 'pending'");
-    log(map!.length.toString());
-    if (map != null) {
-      return map.length;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .where('organizationsId', isEqualTo: id)
+        .where('status', isEqualTo: 'pending')
+        .get();
+
+    final data = querySnapshot.docs.map((e) => e).toList();
+
+    if (data.isNotEmpty) {
+      log("data not empty");
+      return data.length;
     }
+
     return 0;
   }
 
   Future<int> getTotalOrgData(int id) async {
-    db ??= await DBDetails.InitDatabase();
-    log("getTotalData for user :");
-    int newId = await getOrgId(id);
+    id = await getOrgId(id);
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .where('organizationsId', isEqualTo: id)
+        .get();
 
-    List<Map<String, dynamic?>>? map = await db?.rawQuery(
-        "SELECT * FROM ${DBDetails.DBTable_COMPLAIN} WHERE (organizationsId = ${newId})");
-    log(map!.length.toString());
-    if (map != null) {
-      return map.length;
+    final data = querySnapshot.docs.map((e) => e).toList();
+
+    if (data.isNotEmpty) {
+      log("data not empty");
+      return data.length;
     }
     return 0;
   }

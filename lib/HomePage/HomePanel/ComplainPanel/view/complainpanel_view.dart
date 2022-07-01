@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -368,7 +366,7 @@ class _ComplainPageState extends State<ComplainPage> {
         // log(file.toString());
         // log(file.size.toString());
         // log(file.bytes.toString());
-        log(fileBytes.toString());
+        // log(fileBytes.toString());
 
         filename = file.name;
         fileAttached = true;
@@ -405,7 +403,7 @@ class _ComplainPageState extends State<ComplainPage> {
         repliedToOrg: "true",
         repliedToUser: "false",
       );
-      controller.submitComplain(model, context);
+      controller.submitComplain(model, filename!, context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

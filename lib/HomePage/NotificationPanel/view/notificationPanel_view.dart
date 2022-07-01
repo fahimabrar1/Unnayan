@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -224,7 +223,7 @@ class _NotificationTileState extends State<NotificationTile> {
   late WidContainer container;
   NotificationPageController controller = NotificationPageController();
   late bool gotImage;
-  late List<int> displayImage;
+  late String displayImage;
 
   @override
   void initState() {
@@ -256,10 +255,8 @@ class _NotificationTileState extends State<NotificationTile> {
                                         color: MyColor.white,
                                         child: (gotImage)
                                             ? Image(
-                                                image: MemoryImage(
-                                                  Uint8List.fromList(
-                                                      displayImage),
-                                                ),
+                                                image:
+                                                    NetworkImage(displayImage),
                                                 fit: BoxFit.cover,
                                               )
                                             : const CircularProgressIndicator(),
@@ -301,10 +298,8 @@ class _NotificationTileState extends State<NotificationTile> {
                                         color: MyColor.white,
                                         child: (gotImage)
                                             ? Image(
-                                                image: MemoryImage(
-                                                  Uint8List.fromList(
-                                                      displayImage),
-                                                ),
+                                                image:
+                                                    NetworkImage(displayImage),
                                                 fit: BoxFit.cover,
                                               )
                                             : const CircularProgressIndicator(),
@@ -356,9 +351,7 @@ class _NotificationTileState extends State<NotificationTile> {
                                     color: MyColor.white,
                                     child: (gotImage)
                                         ? Image(
-                                            image: MemoryImage(
-                                              Uint8List.fromList(displayImage),
-                                            ),
+                                            image: NetworkImage(displayImage),
                                             fit: BoxFit.cover,
                                           )
                                         : const CircularProgressIndicator(),
@@ -400,6 +393,11 @@ class _NotificationTileState extends State<NotificationTile> {
   }
 
   Future getTileLogo() async {
+    log("Printing Tile Index:" + widget.index.toString());
+    log("Printing Tile Counder ID:" +
+        widget.foundUsers![widget.index].iduser.toString());
+    log("Printing Tile Counder ID:" +
+        widget.foundUsers![widget.index].organizationsId.toString());
     return await controller
         .getTileLogo(
             (context.read<LoginpageModel>().userType != 'user')

@@ -70,7 +70,8 @@ class _LoginPageState extends State<LoginPage> {
                           style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 100, vertical: 15),
-                              side: BorderSide(color: MyColor.newMediumTeal),
+                              side: const BorderSide(
+                                  color: MyColor.newMediumTeal),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50))),
                           child: Text(
@@ -82,10 +83,13 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (builder) => CreateAcountSTF(),
+                                builder: (builder) => const CreateAcountSTF(),
                               ),
                             );
                           },
+                        ),
+                        const SizedBox(
+                          height: 20,
                         ),
                       ],
                     ),
@@ -183,15 +187,15 @@ class _LoginPageFormState extends State<LoginPageForm> {
                 errorText: _userTaped ? errorUserText : null,
                 focusedBorder: const UnderlineInputBorder(
                   borderSide:
-                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                      BorderSide(color: MyColor.newDarkTeal, width: 0.0),
                 ),
                 enabledBorder: const OutlineInputBorder(
                   borderSide:
-                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                      BorderSide(color: MyColor.newDarkTeal, width: 0.0),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             TextFormField(
@@ -199,6 +203,7 @@ class _LoginPageFormState extends State<LoginPageForm> {
               onChanged: (val) {
                 _password = val;
               },
+              obscureText: true,
               cursorColor: MyColor.newDarkTeal,
               decoration: InputDecoration(
                 filled: true,
@@ -210,11 +215,11 @@ class _LoginPageFormState extends State<LoginPageForm> {
                 errorText: _userTaped ? errorUserText : null,
                 focusedBorder: const UnderlineInputBorder(
                   borderSide:
-                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                      BorderSide(color: MyColor.newDarkTeal, width: 0.0),
                 ),
                 enabledBorder: const OutlineInputBorder(
                   borderSide:
-                      const BorderSide(color: MyColor.newDarkTeal, width: 0.0),
+                      BorderSide(color: MyColor.newDarkTeal, width: 0.0),
                 ),
               ),
             ),
@@ -230,7 +235,7 @@ class _LoginPageFormState extends State<LoginPageForm> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (builder) => ForgotPasswordSTF(),
+                      builder: (builder) => const ForgotPasswordSTF(),
                     ),
                   );
                 },

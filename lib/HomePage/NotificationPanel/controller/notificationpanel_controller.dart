@@ -36,8 +36,12 @@ class NotificationPageController extends ControllerMVC {
     return V;
   }
 
-  Future<List<int>?> getTileLogo(int id, BuildContext context) async {
-    return model.getTileLogo(id, context);
+  Future<String?> getTileLogo(int id, BuildContext context) async {
+    String? img;
+    await model.getTileLogo(id, context).then((value) {
+      img = value;
+    });
+    return img;
   }
 
   Future<void> updateComplainNotificationToUserToFalse(

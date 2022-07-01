@@ -8,6 +8,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -116,7 +117,7 @@ class NotificationPageModel {
 
   Future<List<NotificationPageModel>?> showNotifications(int userId,
       NotificationEnum nEnum, String repliedToUser, String userType) async {
-    final credential = await FirebaseAuth.instance.currentUser!.email;
+    final credential = FirebaseAuth.instance.currentUser!.email;
     QuerySnapshot querySnapshot;
 
     // final allData = querySnapshot.docs.map((doc) => doc).toList();
@@ -138,7 +139,8 @@ class NotificationPageModel {
           //     "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId} AND repliedToUser = '${repliedToUser}')");
         } else {
           int newId = await getOrgId(userId);
-          log("Org ID: " + newId.toString());
+          log("Old Org ID: " + userId.toString());
+          log("New Org ID: " + newId.toString());
 
           querySnapshot = await FirebaseFirestore.instance
               .collection('db')
@@ -222,7 +224,7 @@ class NotificationPageModel {
 
         break;
     }
-    List<NotificationPageModel>? model = null;
+    List<NotificationPageModel>? model;
     log(querySnapshot.toString());
     final data = querySnapshot.docs.map((e) => e).toList();
     log("Notif Data Check!");
@@ -232,6 +234,7 @@ class NotificationPageModel {
       model = [];
       for (QueryDocumentSnapshot element in data) {
         NotificationPageModel nModel = NotificationPageModel.fromMap(element);
+        log(nModel.toString());
         await nModel.getImage().then((value) {
           nModel.image = value;
           model!.add(nModel);
@@ -252,105 +255,49 @@ class NotificationPageModel {
     log("Download URL: " + imageUrl);
     return imageUrl;
   }
-  // Future<List<NotificationPageModel>?> showNotifications(int userId,
-  //     NotificationEnum nEnum, String repliedToUser, String userType) async {
-  //   if (db == null) {
-  //     await open_Database();
-  //   }
-  //   List<Map<String, dynamic>>? maps;
-  //   switch (nEnum) {
-  //     case NotificationEnum.def:
-  //       if (userType == 'user') {
-  //         maps = await db?.rawQuery(
-  //             "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId} AND repliedToUser = '${repliedToUser}')");
-  //       } else {
-  //         int newId = await getOrgId(userId);
-  //         log("Org ID: " + newId.toString());
-  //         maps = await db?.rawQuery(
-  //             "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (organizationsId = ${newId} AND repliedToOrg = '${repliedToUser}')");
-  //       }
-  //
-  //       break;
-  //     case NotificationEnum.userTotal:
-  //       maps = await db?.rawQuery(
-  //           "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId})");
-  //       break;
-  //
-  //     case NotificationEnum.userHistory:
-  //       maps = await db?.rawQuery(
-  //           "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId} AND status = 'solved')");
-  //       break;
-  //     case NotificationEnum.userPending:
-  //       maps = await db?.rawQuery(
-  //           "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (iduser = ${userId} AND status = 'pending')");
-  //       break;
-  //
-  //     ///
-  //     ///
-  //     /// ORG
-  //     ///
-  //     case NotificationEnum.orgTotal:
-  //       int newId = await getOrgId(userId);
-  //       log("Org ID: " + newId.toString());
-  //       maps = await db?.rawQuery(
-  //           "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (organizationsId = ${newId})");
-  //       break;
-  //
-  //     case NotificationEnum.orgRecent:
-  //       int newId = await getOrgId(userId);
-  //       log("Org ID: " + newId.toString());
-  //       maps = await db?.rawQuery(
-  //           "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (organizationsId = ${newId} AND status = 'solved')");
-  //       break;
-  //     case NotificationEnum.orgPending:
-  //       int newId = await getOrgId(userId);
-  //       log("Org ID: " + newId.toString());
-  //       maps = await db?.rawQuery(
-  //           "SELECT * from ${DBDetails.DBTable_COMPLAIN} where (organizationsId = ${newId} AND status = 'pending')");
-  //       break;
-  //   }
-  //   List<NotificationPageModel> model = [];
-  //   log(maps!.length.toString());
-  //
-  //   if (maps.isNotEmpty) {
-  //     for (var card in maps) {
-  //       try {
-  //         throw new Exception('This is my first custom exception');
-  //
-  //         // var nModel = NotificationPageModel.fromMap(card);
-  //         // model.add(nModel);
-  //
-  //       } catch (e) {}
-  //     }
-  //
-  //     return model;
-  //   }
-  //
-  //   return null;
-  // }
 
-  Future<List<int>?> getTileLogo(int id, BuildContext context) async {
-    if (db != null) {
-      db = await DBDetails.InitDatabase();
-    }
-
-    ///
-    /// ?Wrong Query
-    ///
-    String query;
+  Future<String?> getTileLogo(int id, BuildContext context) async {
+    QuerySnapshot querySnapshot;
+    log("User Id:" + id.toString());
     if (context.read<LoginpageModel>().userType != 'user') {
-      query =
-          "SELECT image from ${DBDetails.DBTable_USER} where iduser = ${id}";
+      log("Looking for Org :" + id.toString());
+
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('db')
+          .doc('unnayan')
+          .collection('users')
+          .where('iduser', isEqualTo: id)
+          .get();
     } else {
-      query =
-          "SELECT image from ${DBDetails.DBTable_ORGANIZATIONS} where organizationsId = ${id}";
+      log("Looking for User :" + id.toString());
+
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('db')
+          .doc('unnayan')
+          .collection('organizations')
+          .where('organizationsId', isEqualTo: id.toString())
+          .get();
     }
-    List<Map<String, dynamic>>? maps = await db?.rawQuery(query);
-    if (maps!.length == 1) {
-      List<int> img = maps.first['image'];
-      return img;
+    log(querySnapshot.toString());
+    final data = querySnapshot.docs.map((e) => e).toList();
+    String? imgURl;
+    log("Tile Data Size:" + data.length.toString());
+    if (data.isNotEmpty) {
+      log("Tile got data");
+      for (var element in data) {
+        imgURl = element.get('image');
+      }
+      FirebaseStorage storage = FirebaseStorage.instance;
+      log(storage.toString());
+      Reference ref = storage.refFromURL(imgURl!);
+      await ref.getDownloadURL().then((value) => imgURl = value);
+      log("Download URL: " + imgURl!);
+      return imgURl;
+    } else {
+      log("Tile does not got  data");
+
+      return imgURl;
     }
-    return null;
   }
 
   Future<List<int>?> showUserLogo(int id) async {
@@ -371,30 +318,29 @@ class NotificationPageModel {
   }
 
   Future<void> updateComplainNotificationToUserToFalse(
-      String complainId, String showNotifToUserStr) async {}
-  // Future<void> updateComplainNotificationToUserToFalse(
-  //     int complainId, String showNotifToUserStr) async {
-  //   db ??= await DBDetails.InitDatabase();
-  //
-  //   String query =
-  //       "UPDATE complain SET showNotiftoUser = ? WHERE complainId = ?";
-  //
-  //   int num = await db!.rawUpdate(query, [showNotifToUserStr, complainId]);
-  //   log("Updated Row: " + num.toString());
-  // }
+      String complainId, String showNotifToUserStr) async {
+    return await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .doc(complainId)
+        .update({'showNotiftoUser': showNotifToUserStr})
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
 
   Future<int> getOrgId(int userId) async {
     QuerySnapshot reference = await FirebaseFirestore.instance
         .collection('db')
         .doc('unnayan')
-        .collection('organization')
-        .where('iduser', isEqualTo: userId)
+        .collection('organizations')
+        .where('iduser', isEqualTo: userId.toString())
         .get();
     final data = reference.docs.map((e) => e).toList();
 
     if (data.length == 1) {
       for (var element in data) {
-        return element.get('organizationsId');
+        return int.parse(element.get('organizationsId'));
       }
     }
 
@@ -414,13 +360,14 @@ class NotificationPageModel {
 
   Future<void> updateComplainNotificationToOrgToFalse(
       String complainId, String showNotifToUserStr) async {
-    // db ??= await DBDetails.InitDatabase();
-    //
-    // String query =
-    //     "UPDATE complain SET showNotiftoOrg = ? WHERE complainId = ?";
-    //
-    // int num = await db!.rawUpdate(query, [showNotifToUserStr, complainId]);
-    // log("Updated Row: " + num.toString());
+    return await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('complain')
+        .doc(complainId)
+        .update({'showNotiftoOrg': showNotifToUserStr})
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
   }
 
   // Future<void> updateComplainNotificationToOrgToFalse(

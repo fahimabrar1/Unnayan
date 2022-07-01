@@ -17,12 +17,12 @@ class CreateAccountController extends ControllerMVC {
       String? password,
       String? location,
       List<int>? image,
-      String? username,
+      String? fileName,
       String? cellNumber,
       String? userType,
       String? instituteName) async {
     await model.createAcccountForUser(
-        username: username,
+        filename: fileName,
         email: email,
         phoneNumber: cellNumber,
         password: password,
@@ -33,28 +33,19 @@ class CreateAccountController extends ControllerMVC {
         location: location);
   }
 
-  Future<bool> checkUserNameFromDB(String username) async {
-    bool val = false;
-    await model.checkUserNameFromDB(username).then((value) {
-      val = value;
-    });
-
-    return val;
-  }
-
   Future<void> createAccountForOrg(
       String? fullName,
       String? email,
       String? password,
       String? location,
       List<int>? image,
-      String? username,
+      String? filename,
       String? cellNumber,
       String? userType,
       int? orgType) async {
     bool val = false;
     await model.createAccountForOrg(
-        username: username,
+        filename: filename,
         email: email,
         phoneNumber: cellNumber,
         password: password,

@@ -30,7 +30,7 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
   ];
   bool ifOrg = false;
   List<int>? fileBytes;
-
+  String? fileName;
   late bool fileAttached;
   String? FullName,
       Email,
@@ -45,6 +45,7 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
       CreateAccountController();
   final usernameTextController = TextEditingController();
   bool validUserName = false;
+  bool showPictureWarning = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -117,6 +118,24 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         ),
                       ),
                     ),
+                    (showPictureWarning)
+                        ? SizedBox(
+                            height: 10,
+                          )
+                        : Container(),
+                    (showPictureWarning)
+                        ? Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: MyColor.red.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Text(
+                              "*Required Picture!!",
+                              style: CustomTextStyle.RubiktextStyle(
+                                  MyColor.red, 10),
+                            ),
+                          )
+                        : Container(),
                     const SizedBox(
                       height: 20,
                     ),
@@ -226,11 +245,11 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         hintText: 'Full Name',
                         labelText: 'Full Name',
                         focusedBorder: const UnderlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                       ),
@@ -250,57 +269,6 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                       height: 10,
                     ),
                     TextFormField(
-                      controller: usernameTextController,
-                      cursorColor: MyColor.newDarkTeal,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: MyColor.white,
-                        labelStyle: CustomTextStyle.RubiktextStyle(
-                            MyColor.newDarkTeal, 14),
-                        suffixIcon: (usernameTextController.value.text.isEmpty)
-                            ? null
-                            : (validUserName)
-                                ? const Icon(
-                                    Icons.check_circle_outline,
-                                    color: MyColor.greenButton,
-                                  )
-                                : RotationTransition(
-                                    turns: AlwaysStoppedAnimation(45 / 360),
-                                    child: const Icon(
-                                      Icons.add_circle_outline,
-                                      color: MyColor.red,
-                                    ),
-                                  ),
-                        hintText: 'Username',
-                        labelText: 'Username',
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: MyColor.newDarkTeal, width: 0.0),
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: MyColor.newDarkTeal, width: 0.0),
-                        ),
-                      ),
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please Enter Username';
-                        } else if (!validUserName) {
-                          return 'User Already Exists,Use a valid username';
-                        }
-                        return null;
-                      },
-                      onChanged: (val) {
-                        setState(() {
-                          Username = val.trim();
-                          checkUserNameFromDB(Username);
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
                       cursorColor: MyColor.newDarkTeal,
                       decoration: InputDecoration(
                         filled: true,
@@ -310,11 +278,11 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         hintText: 'Email',
                         labelText: 'Email',
                         focusedBorder: const UnderlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                       ),
@@ -349,11 +317,11 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         hintText: 'Password',
                         labelText: 'Password',
                         focusedBorder: const UnderlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                       ),
@@ -361,6 +329,8 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return 'Please Enter Your Password';
+                        } else if (value.length < 6) {
+                          return 'Password Is Short';
                         }
                         return null;
                       },
@@ -383,11 +353,11 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         hintText: 'Cell No.',
                         labelText: 'Cell No.',
                         focusedBorder: const UnderlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                       ),
@@ -417,11 +387,11 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                         hintText: 'Location',
                         labelText: 'Location',
                         focusedBorder: const UnderlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                               color: MyColor.newDarkTeal, width: 0.0),
                         ),
                       ),
@@ -452,11 +422,11 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
                               hintText: 'Institution Name',
                               labelText: 'Institution Name',
                               focusedBorder: const UnderlineInputBorder(
-                                borderSide: const BorderSide(
+                                borderSide: BorderSide(
                                     color: MyColor.newDarkTeal, width: 0.0),
                               ),
                               enabledBorder: const OutlineInputBorder(
-                                borderSide: const BorderSide(
+                                borderSide: BorderSide(
                                     color: MyColor.newDarkTeal, width: 0.0),
                               ),
                             ),
@@ -520,21 +490,27 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
   }
 
   Future<void> onSubmit() async {
-    if (UserType == 'user') {
-      await createAccountController
-          .createAccountForUser(FullName, Email, Password, Location, fileBytes,
-              Username, CellNumber, UserType, InstituteName)
-          .whenComplete(() {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const LoginPage()));
-      });
+    if (fileAttached) {
+      if (UserType == 'user') {
+        await createAccountController
+            .createAccountForUser(FullName, Email, Password, Location,
+                fileBytes, fileName, CellNumber, UserType, InstituteName)
+            .whenComplete(() {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const LoginPage()));
+        });
+      } else {
+        await createAccountController
+            .createAccountForOrg(FullName, Email, Password, Location, fileBytes,
+                fileName, CellNumber, UserType, orgType)
+            .whenComplete(() {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const LoginPage()));
+        });
+      }
     } else {
-      await createAccountController
-          .createAccountForOrg(FullName, Email, Password, Location, fileBytes,
-              Username, CellNumber, UserType, orgType)
-          .whenComplete(() {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const LoginPage()));
+      setState(() {
+        showPictureWarning = true;
       });
     }
   }
@@ -551,10 +527,10 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
 
       setState(() {
         fileBytes = file.bytes;
-
-        log(fileBytes.toString());
+        fileName = file.name;
 
         fileAttached = true;
+        showPictureWarning = false;
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -562,13 +538,5 @@ class _CreateAcountSTFState extends State<CreateAcountSTF> {
       ));
       fileAttached = false;
     }
-  }
-
-  Future<void> checkUserNameFromDB(String? username) async {
-    createAccountController.checkUserNameFromDB(username!).then((value) {
-      setState(() {
-        validUserName = !value;
-      });
-    });
   }
 }
