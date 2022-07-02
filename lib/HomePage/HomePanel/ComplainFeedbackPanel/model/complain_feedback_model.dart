@@ -61,12 +61,12 @@ class ComplainFeedBackPanelModel {
         .collection('complain')
         .doc(complainId)
         .update({
-          "status": "status",
+          "status": "solved",
           "detaiilsByOrg": detailsByOrg,
           "showNotiftoUser": "true",
           "repliedToUser": "true",
         })
-        .then((value) => print("User Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
+        .then((value) => log("User Updated"))
+        .catchError((error) => log("Failed to update user: $error"));
   }
 }

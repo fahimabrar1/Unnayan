@@ -359,15 +359,6 @@ class _ComplainPageState extends State<ComplainPage> {
 
       setState(() {
         fileBytes = file.bytes;
-
-        ///
-        /// * Log
-        ///
-        // log(file.toString());
-        // log(file.size.toString());
-        // log(file.bytes.toString());
-        // log(fileBytes.toString());
-
         filename = file.name;
         fileAttached = true;
       });

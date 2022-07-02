@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/AlWids.dart';
 import 'package:unnayan/Components/cusomt_text_style.dart';
 import 'package:unnayan/HomePage/ProfilePanel/controller/profilepanel_contorller.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
+import 'package:unnayan/LoginPage/view/loginpage_view.dart';
 import 'package:unnayan/my_color.dart';
 import 'package:unnayan/my_vars.dart';
 
@@ -175,6 +177,35 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
+          SizedBox(
+            height: 10,
+          ),
+          ElevatedButton(
+            onPressed: onSignOut,
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50)),
+            ),
+            child: Ink(
+              decoration: BoxDecoration(
+                  color: MyColor.newDarkTeal,
+                  borderRadius: BorderRadius.circular(50)),
+              child: Container(
+                width: 300,
+                height: 50,
+                alignment: Alignment.center,
+                child: Text(
+                  'Sign Out',
+                  style: CustomTextStyle.RubiktextStyle(MyColor.white, 14,
+                      fontWeight: FontWeight.w400),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );
@@ -204,6 +235,17 @@ class _ProfilePageState extends State<ProfilePage> {
         historyNum = k;
       });
     }
+  }
+
+  Future onSignOut() async {
+    await FirebaseAuth.instance.signOut().whenComplete(
+          () => Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (builder) => LoginPageSTL(),
+              ),
+              (Route<dynamic> route) => false),
+        );
   }
 }
 

@@ -14,6 +14,7 @@ class MyColor {
   static const Color whiteLowOpacity = Color.fromARGB(220, 255, 255, 255);
   static const Color blackFont = Color.fromARGB(255, 20, 20, 20);
   static const Color ash = Color.fromARGB(255, 197, 197, 197);
+  static const Color lightAsh = Color.fromARGB(255, 229, 229, 229);
   static const Color greenButton = Color(0xFF39EB36);
   static const Color red = Color.fromARGB(255, 228, 10, 10);
 

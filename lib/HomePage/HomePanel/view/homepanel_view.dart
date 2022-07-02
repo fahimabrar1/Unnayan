@@ -9,6 +9,7 @@ import 'package:unnayan/HomePage/HomePanel/controller/homepanel_controller.dart'
 import 'package:unnayan/HomePage/HomePanel/model/homepanel_model.dart';
 import 'package:unnayan/HomePage/NotificationPanel/controller/notificationpanel_controller.dart';
 import 'package:unnayan/HomePage/NotificationPanel/model/notificationpanel_model.dart';
+import 'package:unnayan/HomePage/UserChatPanel/view/user_chat_page_view.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/Services/notification_service.dart';
 import 'package:unnayan/my_color.dart';
@@ -39,6 +40,10 @@ class _HomePageState extends State<HomePage> {
     if (index == 2) {
       badgeCounter.resetCounter();
     }
+    // if (index == 1) {
+    //   Navigator.push(
+    //       context, MaterialPageRoute(builder: (builder) => ChatPage()));
+    // }
     setState(() {
       widContainer.resetHome();
       _selectedIndex = index;
@@ -61,12 +66,9 @@ class _HomePageState extends State<HomePage> {
     List<Widget> _widgetOptions = <Widget>[
       const HomeSTF(),
       // ComplainPage(),
-      WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
-        child: Container(),
-      ),
+
+      UserChatPage(),
+
       // Text(
       //   'Index 1: Messaging',
       //   style: optionStyle,

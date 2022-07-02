@@ -7,9 +7,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:sqflite/sqflite.dart';
-
-import '../../../dbdetails.dart';
+import 'package:mvc_pattern/mvc_pattern.dart';
 
 class ComplainPanelModel {
   ComplainPanelModel({
@@ -77,12 +75,6 @@ class ComplainPanelModel {
         "repliedToOrg": repliedToOrg,
       };
 
-  Database? db;
-
-  Future<void> open_Database() async {
-    db = await DBDetails.InitDatabase();
-  }
-
   Future insertByUser(ComplainPanelModel model, String filename) async {
     final storageRef = FirebaseStorage.instance.ref();
 
@@ -100,9 +92,102 @@ class ComplainPanelModel {
       });
 
       await imgRef.putData(Uint8List.fromList(model.image!));
+      await addMsgTokens(
+          model.iduser.toString(), model.organizationsId.toString());
     } catch (e) {}
-    if (db == null) {
-      await open_Database();
+  }
+
+  Future<void> addMsgTokens(String? iduser, String? organizationsId) async {
+    String token;
+    String token2;
+    String tokenGenerated = "";
+    //Check On Loged In user Side.
+    QuerySnapshot getusers = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('users')
+        .where('iduser', isEqualTo: int.parse(iduser!))
+        .get();
+
+    final userdata = getusers.docs.map((e) => e).toList();
+    if (userdata.isNotEmpty) {
+      log(userdata.first.reference.id);
+      QuerySnapshot getUserToken = await FirebaseFirestore.instance
+          .collection('db')
+          .doc('unnayan')
+          .collection('users')
+          .doc(userdata.first.reference.id)
+          .collection('msgTokens')
+          .where('to', isEqualTo: organizationsId)
+          .get();
+      final tokendata = getUserToken.docs.map((e) => e).toList();
+      if (tokendata.isNotEmpty) {
+        token = tokendata.first.get('msgToken');
+        return;
+      } else {
+        var uuid = Uuid();
+
+        tokenGenerated = uuid.generateV4();
+        String newOrgId = await getOtherUserId(organizationsId!);
+        log("Org ID:" + organizationsId);
+        log("New Org ID:" + newOrgId);
+        await FirebaseFirestore.instance
+            .collection('db')
+            .doc('unnayan')
+            .collection('users')
+            .doc(userdata.first.reference.id)
+            .collection('msgTokens')
+            .add({"from": iduser, "to": newOrgId, "msgToken": tokenGenerated});
+        QuerySnapshot getusers2 = await FirebaseFirestore.instance
+            .collection('db')
+            .doc('unnayan')
+            .collection('users')
+            .where('iduser', isEqualTo: int.parse(newOrgId))
+            .get();
+        final userdata2 = getusers2.docs.map((e) => e).toList();
+        if (userdata2.isNotEmpty) {
+          QuerySnapshot getUserToken2 = await FirebaseFirestore.instance
+              .collection('db')
+              .doc('unnayan')
+              .collection('users')
+              .doc(userdata2.first.reference.id)
+              .collection('msgTokens')
+              .where('to', isEqualTo: iduser)
+              .get();
+          final tokendata2 = getUserToken2.docs.map((e) => e).toList();
+
+          if (tokendata2.isNotEmpty) {
+            token2 = tokendata2.first.get('msgToken');
+          } else {
+            await FirebaseFirestore.instance
+                .collection('db')
+                .doc('unnayan')
+                .collection('users')
+                .doc(userdata2.first.reference.id)
+                .collection('msgTokens')
+                .add({
+              "from": newOrgId,
+              "to": iduser,
+              "msgToken": tokenGenerated
+            });
+          }
+        }
+      }
     }
+  }
+
+  Future<String> getOtherUserId(String orgId) async {
+    QuerySnapshot snap = await FirebaseFirestore.instance
+        .collection('db')
+        .doc('unnayan')
+        .collection('organizations')
+        .where('organizationsId', isEqualTo: orgId)
+        .get();
+
+    final data = snap.docs.map((e) => e).toList();
+    if (data.isNotEmpty) {
+      return data.first.get('iduser');
+    }
+    return "0";
   }
 }
