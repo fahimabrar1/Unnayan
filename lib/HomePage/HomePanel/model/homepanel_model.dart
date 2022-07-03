@@ -8,22 +8,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:unnayan/HomePage/dbdetails.dart';
-
-// HomeORGPageGrid HomePageORGGridFromMap(String str) => HomeORGPageGrid.fromMap(json.decode(str));
-//
-// String homePageORGModelToMap(HomeORGPageGrid data) => json.encode(data.toMap());
-//
-// HomeINSPageGrid HomePageINSGridFromMap(String str) => HomeINSPageGrid.fromMap(json.decode(str));
-//
-// String homePageINSModelToMap(HomeINSPageGrid data) => json.encode(data.toMap());
 
 class HomeORGPageModel {
   Database? db;
-
-  Future<void> open_Database() async {
-    db = await DBDetails.InitDatabase();
-  }
 
   Future<List<HomeORGPageGrid>?> getOrganizationGrid() async {
     List<HomeORGPageGrid> grid = [];
@@ -74,10 +61,6 @@ class HomeORGPageModel {
 
 class HomeINSPageModel {
   Database? db;
-
-  Future<void> open_Database() async {
-    db = await DBDetails.InitDatabase();
-  }
 
   Future<List<HomeINSPageGrid>?> getInstitueGrid(int ID) async {
     List<HomeINSPageGrid> grid = [];

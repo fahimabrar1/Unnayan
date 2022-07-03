@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:unnayan/HomePage/dbdetails.dart';
 
 ProfileModel loginpageModelFromMap(String str) =>
     ProfileModel.fromMap(json.decode(str));
@@ -22,9 +21,7 @@ class ProfileModel {
     this.name,
     this.location,
     this.image,
-  }) {
-    _openDatabase();
-  }
+  }) {}
 
   int? iduser;
   String? username;
@@ -62,32 +59,6 @@ class ProfileModel {
         "location": location,
         "image": image,
       };
-
-  Future _openDatabase() async {
-    String path = DBDetails.DBPATH + DBDetails.DBNAME;
-    print(path);
-
-    db = await openDatabase(path, version: 1);
-    if (db!.isOpen) {
-      print("Database is Opended");
-    }
-  }
-
-  Future open(String path) async {}
-
-  Future<ProfileModel?> getUser(String? myuser, String? mypassword) async {
-    // Get the records
-    db ??= await DBDetails.InitDatabase();
-    List<Map<String, dynamic?>>? list = await db?.rawQuery(
-        "SELECT * FROM ${DBDetails.DBTable_USER} WHERE (username = '$myuser' OR email = '$myuser' OR phoneNumber = '$myuser') AND (password = '$mypassword')");
-    log(list.toString());
-    if (list!.length == 1) {
-      return ProfileModel.fromMap(list.first);
-    }
-    return null;
-  }
-
-  Future close() async => db?.close();
 
   Future<int> getTotalUserData(int id) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance

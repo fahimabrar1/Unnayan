@@ -41,8 +41,4 @@ class HomePageController extends ControllerMVC {
       // print(grid);
     });
   }
-
-  Future<void> initDatabase() async {
-    await model.open_Database();
-  }
 }

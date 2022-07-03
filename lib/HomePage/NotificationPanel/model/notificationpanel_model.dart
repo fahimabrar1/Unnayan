@@ -11,8 +11,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:unnayan/HomePage/dbdetails.dart';
 import 'package:unnayan/LoginPage/model/loginpage_model.dart';
 import 'package:unnayan/my_vars.dart';
 
@@ -108,12 +106,6 @@ class NotificationPageModel {
         "repliedToUser": repliedToUser,
         "repliedToOrg": repliedToOrg,
       };
-
-  Database? db;
-
-  Future<void> open_Database() async {
-    db = await DBDetails.InitDatabase();
-  }
 
   Future<List<NotificationPageModel>?> showNotifications(int userId,
       NotificationEnum nEnum, String repliedToUser, String userType) async {
@@ -298,23 +290,6 @@ class NotificationPageModel {
 
       return imgURl;
     }
-  }
-
-  Future<List<int>?> showUserLogo(int id) async {
-    if (db != null) {
-      db = await DBDetails.InitDatabase();
-    }
-
-    ///
-    /// ?Wrong Query
-    ///
-    List<Map<String, dynamic>>? maps = await db?.rawQuery(
-        "SELECT image from ${DBDetails.DBTable_USER} where iduser = ${id}");
-    if (maps!.length == 1) {
-      List<int> img = maps.first['image'];
-      return img;
-    }
-    return null;
   }
 
   Future<void> updateComplainNotificationToUserToFalse(
