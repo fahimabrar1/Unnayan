@@ -56,7 +56,11 @@ class _HomePageState extends State<HomePage> {
     badgeCounter = context.read<BadgeCounter>();
     widContainer = context.read<WidContainer>();
 
-    getNotificationsFromOrg(context.read<LoginpageModel>().userType);
+    if (context.read<LoginpageModel>().userType == 'user') {
+      getNotificationsFromOrg(context.read<LoginpageModel>().userType);
+    } else {
+      getNotificationsFromUser(context.read<LoginpageModel>().userType);
+    }
 
     super.initState();
   }
@@ -163,7 +167,7 @@ class _HomePageState extends State<HomePage> {
           NotificationService().showNotificaiton(notifId, element.name!,
               element.detailsByUser.toString(), 1, false);
 
-          log("Notfications for ORG");
+          log("Notfications form ORG");
         }
         notifId++;
       }
@@ -182,7 +186,64 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void getNotificationsFromUser() {}
+  Future<void> getNotificationsFromUser(String? userType) async {
+    int notifId = 1;
+    List<NotificationPageModel> ls = [];
+    await controller
+        .showList(context.read<LoginpageModel>().iduser!, NotificationEnum.def,
+            "true", userType!)
+        .then((value) {
+      ls = value!;
+      for (var element in ls) {
+        log("userType: " + context.read<LoginpageModel>().userType.toString());
+        log("organizationsId: " + element.organizationsId.toString());
+        log("detailsByUser: " + element.detailsByUser.toString());
+        log("showNotiftoOrg: " + element.showNotiftoOrg.toString());
+        log("showNotiftoUser: " + element.showNotiftoUser.toString());
+        log("repliedToUser: " + element.repliedToUser.toString());
+        log("repliedToOrg: " + element.repliedToOrg.toString());
+
+        if (element.showNotiftoUser == 'true' &&
+            context.read<LoginpageModel>().userType == 'user') {
+          setState(() {
+            badgeCounter.increment();
+          });
+
+          NotificationService().showNotificaiton(
+              notifId,
+              element.name!,
+              (element.detailsByUser!.length > 30)
+                  ? element.detailsByUser!.substring(0, 30)
+                  : element.detailsByUser.toString(),
+              1,
+              false);
+        } else if (element.showNotiftoOrg == 'true' &&
+            context.read<LoginpageModel>().userType != 'user') {
+          setState(() {
+            badgeCounter.increment();
+          });
+
+          NotificationService().showNotificaiton(notifId, element.name!,
+              element.detailsByUser.toString(), 1, false);
+
+          log("Notfications form user");
+        }
+        notifId++;
+      }
+
+      // for (var element in ls) {
+      //   if (element.showNotiftoUser == 'true' &&
+      //       context.read<LoginpageModel>().userType! == 'user') {
+      //     controller.updateComplainNotificationToUserToFalse(
+      //         element.complainId!, "false");
+      //   } else if (element.showNotiftoOrg == 'true' &&
+      //       context.read<LoginpageModel>().userType! != 'user') {
+      //     controller.updateComplainNotificationToOrgToFalse(
+      //         element.complainId!, "false");
+      //   }
+      // }
+    });
+  }
 }
 
 ///
@@ -213,7 +274,10 @@ class _HomePagePanelState extends State<HomePagePanel> {
     fetchGridData = false;
     widContainer = context.read<WidContainer>();
     log(widget.enu.toString());
-    homePageGetData(widget.enu, widget.id);
+    if (context.read<LoginpageModel>().userType == 'user') {
+      homePageGetData(widget.enu, widget.id);
+    }
+
     super.initState();
   }
 

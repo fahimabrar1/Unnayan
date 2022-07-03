@@ -139,7 +139,7 @@ class NotificationPageModel {
               .doc('unnayan')
               .collection('complain')
               .where('organizationsId', isEqualTo: newId)
-              .where('repliedToUser', isEqualTo: repliedToUser.toString())
+              .where('repliedToOrg', isEqualTo: repliedToUser.toString())
               .get();
         }
 
@@ -242,9 +242,15 @@ class NotificationPageModel {
   Future<String> getImage() async {
     FirebaseStorage storage = FirebaseStorage.instance;
     log(storage.toString());
-    Reference ref = storage.refFromURL(image!);
-    String imageUrl = await ref.getDownloadURL();
-    log("Download URL: " + imageUrl);
+    String imageUrl;
+    try {
+      Reference ref = storage.refFromURL(image!);
+      imageUrl = await ref.getDownloadURL();
+      log("Download URL: " + imageUrl);
+    } catch (e) {
+      return "";
+    }
+
     return imageUrl;
   }
 

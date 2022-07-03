@@ -17,7 +17,8 @@ class LoginPageController extends ControllerMVC {
 
   Future<void> login(
       BuildContext context, String? _user, String? password) async {
-    LoginpageModel? user = await model.getUser(_user!.trim(), password!.trim());
+    LoginpageModel? user =
+        await model.getUser(_user!.trim(), password!.trim(), context);
     if (user != null) {
       model.setUserData(user);
       Navigator.push(
@@ -35,9 +36,6 @@ class LoginPageController extends ControllerMVC {
           );
         }),
       );
-    } else {
-      const snackBar = SnackBar(content: Text('User Not Found'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }

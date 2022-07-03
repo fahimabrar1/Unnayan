@@ -70,7 +70,7 @@ class ComplainPanelModel {
         "showNotiftoOrg": showNotiftoOrg,
         "iduser": iduser,
         "organizationsId": organizationsId,
-        "detaiilsByOrg": detaiilsByOrg,
+        "detaiilsByOrg": "",
         "repliedToUser": repliedToUser,
         "repliedToOrg": repliedToOrg,
       };

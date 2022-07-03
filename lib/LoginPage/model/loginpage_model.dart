@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 LoginpageModel loginpageModelFromMap(String str) =>
@@ -72,7 +73,8 @@ class LoginpageModel extends ChangeNotifier {
         "image": image,
       };
 
-  Future<LoginpageModel?> getUser(String? myUser, String? myPassword) async {
+  Future<LoginpageModel?> getUser(
+      String? myUser, String? myPassword, BuildContext context) async {
     log("Clicked Login 2: $myUser and $myPassword");
 
     LoginpageModel? model = null;
@@ -105,8 +107,12 @@ class LoginpageModel extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
+        const snackBar = SnackBar(content: Text('User Not Found'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
+        const snackBar = SnackBar(content: Text('Wrong Password'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
 

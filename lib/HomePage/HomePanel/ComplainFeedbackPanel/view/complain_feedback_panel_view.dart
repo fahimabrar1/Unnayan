@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unnayan/AlWids.dart';
@@ -40,8 +42,12 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
     // TODO: implement initState
     if (widget.notificationPageModel!.status == 'solved') {
       isSolved = true;
+      log("Issolved: " + isSolved.toString());
+      log("User Type: " + context.read<LoginpageModel>().userType.toString());
     } else {
       isSolved = false;
+      log("Issolved: " + isSolved.toString());
+      log("User Type: " + context.read<LoginpageModel>().userType.toString());
     }
     super.initState();
   }
@@ -145,7 +151,8 @@ class _ComplainFeedbackPageState extends State<ComplainFeedbackPage> {
                 textAlign: TextAlign.justify,
               ),
             ),
-            (widget.notificationPageModel!.image != null)
+            (widget.notificationPageModel!.image != null &&
+                    widget.notificationPageModel!.image != "")
                 ? Image(
                     image: NetworkImage(widget.notificationPageModel!.image!),
                     // MemoryImage(
