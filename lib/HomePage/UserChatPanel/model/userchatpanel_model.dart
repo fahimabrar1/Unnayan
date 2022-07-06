@@ -77,6 +77,7 @@ class UserChatPanelModel {
                 log("Unique ID: " + element.get('organizationsId').toString());
 
                 ids.add(element.get('organizationsId').toString());
+                break;
               }
             }
           } else {
